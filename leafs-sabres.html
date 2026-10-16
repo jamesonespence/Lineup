@@ -1,0 +1,1513 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head><body><title>Sabres at Maple Leafs Lineup</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Big+Shoulders+Display:wght@700;800&display=swap" rel="stylesheet">
+<style>
+/* Layout: two team columns side by side (away left, home right); on phones one column with a team switch.
+   Each line is a box of player tiles. Tap a tile for the stat sheet. */
+:root{
+  --bg:#EDF1F6; --surface:#FFFFFF; --ink:#0D1B2E; --muted:#5A6A7E; --line:#D2DBE6;
+  --tile:#F4F7FA; --tile-hover:#E6EDF5; --focus:#1F6FEB; --warn:#A8481A; --warn-bg:#FBEBDD;
+  --tor:#00205B; --tor-acc:#9FBBF4; --tor-num:#00205B;
+  --uta:#14171B; --uta-acc:#7FBDF2; --uta-num:#1D6DB0;
+  --edm:#041E42; --edm-acc:#FF8A4C; --edm-num:#C2410C;
+  --lak:#111111; --lak-acc:#B4BCC1; --lak-num:#4A5258;
+  --mtl:#A6192E; --mtl-acc:#C9D6F0; --mtl-num:#A6192E;
+  --wsh:#041E42; --wsh-acc:#FF7B84; --wsh-num:#C8102E;
+  --buf:#003087; --buf-acc:#FFB81C; --buf-num:#003087;
+  --display:'Big Shoulders Display','Arial Narrow',Impact,sans-serif;
+  --body:'Barlow',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0A1119; --surface:#121C29; --ink:#E7EDF5; --muted:#93A4B9; --line:#243448;
+    --tile:#192637; --tile-hover:#213249; --focus:#6AA5FF; --warn:#F0A072; --warn-bg:#3A2616;
+    --tor:#0E2C70; --tor-num:#8FB0F5; --uta:#000000; --uta-num:#86C1F2; --edm:#0A2A5C; --edm-num:#FF8A4C; --lak:#000000; --lak-num:#C5CCD1; --mtl:#7D1424; --mtl-num:#FF7A8A; --wsh:#0A2A5C; --wsh-num:#FF7B84; --buf:#0B2B6B; --buf-num:#F5C451;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0A1119; --surface:#121C29; --ink:#E7EDF5; --muted:#93A4B9; --line:#243448;
+  --tile:#192637; --tile-hover:#213249; --focus:#6AA5FF; --warn:#F0A072; --warn-bg:#3A2616;
+  --tor:#0E2C70; --tor-num:#8FB0F5; --uta:#000000; --uta-num:#86C1F2; --edm:#0A2A5C; --edm-num:#FF8A4C; --lak:#000000; --lak-num:#C5CCD1; --mtl:#7D1424; --mtl-num:#FF7A8A; --wsh:#0A2A5C; --wsh-num:#FF7B84; --buf:#0B2B6B; --buf-num:#F5C451;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.35}
+button{font:inherit;color:inherit}
+[data-team]{--team-bg:#1D2733;--team-acc:#9FB3C8;--num:var(--ink)}
+[data-team="tor"]{--team-bg:var(--tor);--team-acc:var(--tor-acc);--num:var(--tor-num)}
+[data-team="uta"]{--team-bg:var(--uta);--team-acc:var(--uta-acc);--num:var(--uta-num)}
+[data-team="edm"]{--team-bg:var(--edm);--team-acc:var(--edm-acc);--num:var(--edm-num)}
+[data-team="lak"]{--team-bg:var(--lak);--team-acc:var(--lak-acc);--num:var(--lak-num)}
+[data-team="mtl"]{--team-bg:var(--mtl);--team-acc:var(--mtl-acc);--num:var(--mtl-num)}
+[data-team="wsh"]{--team-bg:var(--wsh);--team-acc:var(--wsh-acc);--num:var(--wsh-num)}
+[data-team="buf"]{--team-bg:var(--buf);--team-acc:var(--buf-acc);--num:var(--buf-num)}
+
+.app{max-width:1120px;margin:0 auto;padding-inline:16px;padding-block:20px 36px;display:grid;gap:16px}
+.hd{display:grid;gap:6px}
+.eyebrow{font-size:12px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:var(--muted)}
+h1{margin:0;font-family:var(--display);font-weight:800;font-size:clamp(36px,8vw,58px);line-height:.95;text-transform:uppercase;letter-spacing:.01em;text-wrap:balance}
+.meta{color:var(--muted);font-size:14px;overflow-wrap:anywhere}
+.hint{font-size:13px;color:var(--muted)}
+
+.tabs{display:grid;grid-template-columns:repeat(3,minmax(0,220px));gap:8px;margin-bottom:12px}
+.tab.tab-team{display:none}
+.tab{border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:10px 12px;font-weight:600;cursor:pointer;display:flex;justify-content:space-between;gap:8px;align-items:baseline}
+.tab small{font-weight:500;opacity:.75;font-variant-numeric:tabular-nums}
+.tab[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.tab:focus-visible,.tile:focus-visible,.link:focus-visible,.close:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+
+.lineups{display:grid;gap:16px;grid-template-columns:repeat(2,minmax(0,1fr));align-items:start}
+@media (max-width:899px){
+  .tabs{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .tab.tab-team{display:flex}
+  .tab.tab-lineups{display:none}
+  .tab{flex-direction:column;gap:2px;padding:8px 10px}
+  .lineups{grid-template-columns:minmax(0,1fr)}
+}
+
+.team{background:var(--surface);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.band{background:var(--team-bg);color:#fff;padding:14px 16px;display:flex;justify-content:space-between;align-items:flex-end;gap:12px}
+.band h2{margin:0;font-family:var(--display);font-weight:800;font-size:36px;line-height:.95;text-transform:uppercase}
+.band .sub{margin-top:4px;font-size:12px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:var(--team-acc)}
+.band .rec{text-align:right;font-family:var(--display);font-weight:700;font-size:28px;line-height:1;font-variant-numeric:tabular-nums}
+.band .rec span{display:block;margin-top:4px;font-family:var(--body);font-weight:600;font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--team-acc)}
+.body{padding:14px;display:grid;gap:16px}
+.sec{display:grid;gap:8px}
+.sec-h{font-size:12px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:var(--muted)}
+.box{border:1px solid var(--line);border-radius:8px;padding:8px;display:grid;gap:6px}
+.box-l{font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.row{display:grid;gap:6px;grid-template-columns:repeat(3,minmax(0,1fr))}
+.row.two{grid-template-columns:repeat(2,minmax(0,1fr))}
+
+.tile{display:grid;gap:1px;align-content:start;min-width:0;text-align:left;cursor:pointer;background:var(--tile);border:1px solid transparent;border-radius:6px;padding:7px 8px 8px}
+.tile:hover{background:var(--tile-hover)}
+.t-top{display:flex;justify-content:space-between;align-items:baseline;gap:6px}
+.t-slot{font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.t-num{font-family:var(--display);font-weight:800;font-size:22px;line-height:1;color:var(--num);font-variant-numeric:tabular-nums}
+.t-first{font-size:11px;color:var(--muted);overflow-wrap:anywhere}
+.t-name{font-weight:600;font-size:15px;line-height:1.1;overflow-wrap:anywhere}
+.t-sub{margin-top:3px;font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
+.badge{display:inline-block;margin-top:4px;justify-self:start;font-size:10px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;padding:2px 6px;border-radius:4px;background:var(--team-bg);color:#fff}
+.badge.alt{background:transparent;color:var(--muted);border:1px solid var(--line)}
+
+.st{display:grid;gap:8px;grid-template-columns:repeat(2,minmax(0,1fr))}
+@media (max-width:480px){.st{grid-template-columns:minmax(0,1fr)}}
+.st-b{border:1px solid var(--line);border-radius:8px;padding:8px;display:grid;gap:4px;align-content:start}
+.names{display:flex;flex-wrap:wrap;gap:2px 10px;font-size:13px}
+.link{background:none;border:0;padding:0;cursor:pointer;color:var(--ink);text-decoration:underline;text-decoration-color:var(--line);text-underline-offset:3px}
+.link:hover{text-decoration-color:var(--ink)}
+.plain{font-size:13px;color:var(--muted)}
+.avail{display:grid;gap:6px}
+.avail-l{font-size:13px;display:flex;flex-wrap:wrap;gap:2px 10px;align-items:baseline}
+.avail-l b{font-weight:600}
+.note{color:var(--muted)}
+
+.matchup{display:grid;gap:12px}
+.mu-t{margin:8px 0 0;font-family:var(--display);font-weight:800;font-size:clamp(28px,6vw,40px);line-height:1;text-transform:uppercase}
+.mu-n{font-size:12px;color:var(--muted)}
+.mu-g{display:grid;gap:12px;grid-template-columns:repeat(2,minmax(0,1fr));align-items:start}
+@media (max-width:899px){.mu-g{grid-template-columns:minmax(0,1fr)}}
+.mu-b{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px 14px;display:grid;gap:8px}
+.mu-h{font-family:var(--display);font-weight:800;font-size:20px;text-transform:uppercase;letter-spacing:.02em}
+table.mu{width:100%;border-collapse:collapse;font-size:13px;font-variant-numeric:tabular-nums}
+table.mu th,table.mu td{padding:5px 6px;border-bottom:1px solid var(--line);text-align:right}
+table.mu th:first-child{text-align:left;font-weight:500;color:var(--muted)}
+table.mu thead th{font-weight:700;color:var(--num);border-bottom:2px solid var(--line)}
+table.mu td.win{font-weight:700;color:var(--num)}
+.mu-v{margin:0;font-size:14px;font-weight:600}
+.mu-sub{display:grid;gap:8px;align-content:start;min-width:0}
+.mu-h2{font-family:var(--display);font-weight:800;font-size:16px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.mu-split{display:grid;gap:18px;grid-template-columns:repeat(2,minmax(0,1fr));align-items:start}
+@media (max-width:899px){.mu-split{grid-template-columns:minmax(0,1fr)}}
+.mu-sec{display:grid;gap:12px;scroll-margin-top:60px}
+.mu-bl-l{margin:0;padding:0;list-style:none;display:grid;gap:8px;font-size:14px}
+.mu-bl-l li{display:grid;grid-template-columns:104px minmax(0,1fr);gap:10px;padding-top:8px;border-top:1px solid var(--line)}
+.mu-bl-l li:first-child{border-top:0;padding-top:0}
+.mu-bl-l b{font-family:var(--display);font-weight:800;font-size:15px;text-transform:uppercase;letter-spacing:.03em;color:var(--muted)}
+.mu-jump{position:sticky;top:0;z-index:6;display:flex;gap:6px;overflow-x:auto;padding:8px 0;margin:0 -2px;background:var(--bg);scrollbar-width:none}
+.mu-jump::-webkit-scrollbar{display:none}
+.mu-jump button{flex:0 0 auto;font:inherit;font-size:13px;font-weight:600;padding:6px 12px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer}
+.mu-jump button:active{background:var(--ink);color:var(--bg)}
+.mu-l{margin:0;padding:0;list-style:none;display:grid;gap:8px;font-size:13px}
+.mu-l span{color:var(--muted)}
+.mu-ff{display:grid;gap:10px;grid-template-columns:repeat(2,minmax(0,1fr))}
+@media (max-width:560px){.mu-ff{grid-template-columns:minmax(0,1fr)}}
+.mu-f{background:var(--tile);border-radius:8px;padding:8px 10px;border-left:4px solid var(--team-acc);display:grid;gap:6px}
+.mu-fh{font-family:var(--display);font-weight:800;font-size:18px;text-transform:uppercase}
+.mu-fs,.mu-fn{font-size:12px;color:var(--muted)}
+.chips{display:flex;gap:4px}
+.chip{flex:1;border-radius:6px;padding:4px 0;text-align:center;font-weight:700;font-size:13px;display:grid;line-height:1.1}
+.chip small{font-weight:500;font-size:10px;opacity:.85}
+.chip.w{background:#1E7A4A;color:#fff}.chip.l{background:#B3362F;color:#fff}.chip.otl{background:#B8791A;color:#fff}
+.inj-t{margin:8px 0 0;font-family:var(--display);font-weight:800;font-size:clamp(28px,6vw,40px);line-height:1;text-transform:uppercase}
+.inj-g{display:grid;gap:12px;grid-template-columns:repeat(2,minmax(0,1fr));align-items:start}
+@media (max-width:899px){.inj-g{grid-template-columns:minmax(0,1fr)}}
+.inj-b{background:var(--surface);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.inj-bh{padding:10px 14px;background:var(--team-bg);color:#fff;font-family:var(--display);font-weight:800;font-size:22px;text-transform:uppercase;display:flex;justify-content:space-between;align-items:baseline}
+.inj-bh small{font-family:var(--body);font-weight:500;font-size:12px;color:var(--team-acc);text-transform:none}
+.inj-r{padding:10px 14px;border-top:1px solid var(--line);display:grid;gap:4px}
+.inj-r:first-of-type{border-top:0}
+.inj-n{display:flex;flex-wrap:wrap;gap:6px 8px;align-items:baseline;font-weight:700}
+.inj-n .pos{font-weight:500;font-size:12px;color:var(--muted)}
+.inj-i{font-size:13px;font-weight:600}
+.inj-p{font-size:13px;color:var(--muted)}
+.inj-u{font-size:11px;color:var(--muted)}
+.pill{display:inline-block;border-radius:999px;padding:1px 8px;font-size:11px;font-weight:700;color:#fff}
+.pill.out{background:#B3362F}.pill.dtd{background:#B8791A}.pill.nr{background:#5B6B7F}
+.foot{font-size:12px;color:var(--muted);display:grid;gap:4px}
+.foot a{color:inherit}
+
+/* Player sheet */
+.veil{position:fixed;inset:0;z-index:20;background:rgba(5,10,18,.6);display:flex;align-items:flex-end;justify-content:center}
+.veil[hidden]{display:none}
+.sheet{width:100%;max-width:480px;max-height:90%;overflow:auto;background:var(--surface);color:var(--ink);border-radius:14px 14px 0 0;padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (min-width:700px){.veil{align-items:center}.sheet{border-radius:14px}}
+.m-head{background:var(--team-bg);color:#fff;padding:16px;display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:14px;align-items:center}
+.m-num{font-family:var(--display);font-weight:800;font-size:52px;line-height:.9;color:var(--team-acc);font-variant-numeric:tabular-nums}
+.m-name{font-family:var(--display);font-weight:800;font-size:30px;line-height:.98;text-transform:uppercase;overflow-wrap:anywhere}
+.m-sub{margin-top:4px;font-size:12px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--team-acc)}
+.close{align-self:start;background:rgba(255,255,255,.14);border:0;color:#fff;border-radius:6px;padding:6px 10px;font-size:13px;font-weight:600;cursor:pointer}
+.m-body{padding:14px 16px 18px;display:grid;gap:14px}
+.tags{display:flex;flex-wrap:wrap;gap:6px}
+.tag{font-size:12px;font-weight:600;padding:3px 8px;border-radius:5px;background:var(--tile);border:1px solid var(--line)}
+.status{font-size:13px;font-weight:600;padding:8px 10px;border-radius:6px;background:var(--warn-bg);color:var(--warn)}
+.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
+.stat{background:var(--tile);border-radius:6px;padding:8px 6px;text-align:center;min-width:0}
+.stat b{display:block;font-family:var(--display);font-weight:700;font-size:24px;line-height:1;font-variant-numeric:tabular-nums}
+.stat span{display:block;margin-top:3px;font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.m-foot{font-size:12px;color:var(--muted)}
+.stabs{display:flex;gap:6px;padding:12px 16px 0}
+.stabs button{border:1px solid var(--line);background:var(--tile);border-radius:6px;padding:6px 14px;font-weight:600;font-size:13px;cursor:pointer}
+.stabs button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.stabs button:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+.bio{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px 8px;padding-top:12px;border-top:1px solid var(--line)}
+.bio div{display:grid;gap:1px;min-width:0;align-content:start}
+.bio .wide{grid-column:1/-1}
+.bio span{font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.bio b{font-weight:600;font-size:14px;overflow-wrap:anywhere}
+.tbl-w{overflow-x:auto}
+.tbl{width:100%;border-collapse:collapse;font-size:12.5px;font-variant-numeric:tabular-nums}
+.tbl th,.tbl td{padding:7px 5px;text-align:right;white-space:nowrap}
+.tbl thead th{font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--line)}
+.tbl tbody th{text-align:left;font-weight:600}
+.tbl tbody tr+tr{border-top:1px solid var(--line)}
+.bars{display:grid;gap:14px}
+.bar{display:grid;gap:5px}
+.bar-top{display:flex;justify-content:space-between;gap:8px;font-size:14px}
+.bar-top b{font-variant-numeric:tabular-nums}
+.track{position:relative;height:8px;border-radius:4px;background:var(--tile);border:1px solid var(--line)}
+.track i{position:absolute;inset:0 auto 0 0;border-radius:3px;background:var(--num)}
+.track s{position:absolute;top:-3px;bottom:-3px;width:1px;background:var(--muted);opacity:.5}
+.bar-sub{font-size:11px;color:var(--muted)}
+.grid3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.prof{display:grid;gap:6px;padding:10px 12px;border-radius:8px;background:var(--tile);border-left:4px solid var(--team-acc)}
+.prof-t{font-family:var(--display);font-weight:800;font-size:22px;line-height:1.05;text-transform:uppercase}
+.prof-s{font-size:13px;font-weight:600}
+.why{margin:0;padding-left:18px;font-size:12px;color:var(--muted);display:grid;gap:2px}
+@media (prefers-reduced-motion:no-preference){.sheet{animation:rise .16s ease-out}@keyframes rise{from{transform:translateY(14px);opacity:.6}to{transform:none;opacity:1}}}
+</style>
+
+<div class="app">
+  <header class="hd">
+    <div class="eyebrow" id="eyebrow"></div>
+    <h1 id="title"></h1>
+    <div class="meta" id="meta"></div>
+    <div class="hint">Tap any player for his season stats and tonight role. The Matchup tab compares the two teams.</div>
+  </header>
+  <main id="view" data-active="">
+    <div class="tabs" id="tabs"></div>
+    <div class="lineups" id="lineups"></div>
+  </main>
+  <section class="matchup" id="matchup"></section>
+  <section class="matchup" id="injuries"></section>
+  <footer class="foot" id="foot"></footer>
+</div>
+
+<div class="veil" id="veil" hidden>
+  <div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="m-name"></div>
+</div>
+
+<script>
+/* ===== GAME DATA: the only block that changes from game to game ===== */
+const GAME = {
+  title: "Sabres at Maple Leafs",
+  date: "2026-10-15",
+  eyebrow: "Projected lineups",
+  when: "Thu Oct 15 | 7:00 PM ET",
+  where: "Scotiabank Arena, Toronto",
+  tv: "TSN4 (Canada), MSG-B (US)",
+  asOf: "Toronto lines are from the Oct 15 morning skate (TSN), matching NHL.com and Inside the Rink. Buffalo lines per Daily Faceoff (updated Oct 15, 11:52 AM ET) and NHL.com. Bobrovsky is reported as the Leafs starter; Luukkonen is not confirmed. Lines can change before puck drop.",
+  statsNote: "Season stats are 2026-27 regular season totals from the NHL stats feed, through each team's last completed game. Hits, penalty minutes and faceoffs come from the NHL stats feed. Bio, last season and career lines are from NHL player pages. League percentiles use 2025-26 NHL season stats.",
+  sources: [
+    ["Daily Faceoff: Toronto lines", "https://www.dailyfaceoff.com/teams/toronto-maple-leafs/line-combinations"],
+    ["Daily Faceoff: Buffalo lines", "https://www.dailyfaceoff.com/teams/buffalo-sabres/line-combinations"],
+    ["TSN: Leafs morning skate lines", "https://www.tsn.ca/nhl/article/leafs-try-to-keep-pressure-off-marchenko-amid-so-so-start/"],
+    ["NHL.com: projected lineups", "https://www.nhl.com/news/buffalo-sabres-toronto-maple-leafs-game-preview-october-15-2026"],
+    ["PuckPedia: Toronto injuries", "https://puckpedia.com/team/toronto-maple-leafs/injuries"],
+    ["PuckPedia: Buffalo injuries", "https://puckpedia.com/team/buffalo-sabres/injuries"],
+    ["CBS Sports: NHL injuries", "https://www.cbssports.com/nhl/injuries/"],
+    ["MoneyPuck: team expected goals", "https://moneypuck.com/teams.htm"],
+    ["NHL stats: Toronto", "https://api-web.nhle.com/v1/club-stats/TOR/now"],
+    ["NHL stats: Buffalo", "https://api-web.nhle.com/v1/club-stats/BUF/now"]
+  ],
+  order: ["tor", "buf"],
+  teams: {
+    tor: {
+      city: "Toronto", name: "Maple Leafs", record: "3-3-1", side: "Home",
+      form: { gp: 7, gf: 24, ga: 23, streak: ["L", 1], pp: [29.2, 7, 24], pk: [95.8, 1, 24],
+        last: [["10-03","vs OTT","L","2-3"],["10-06","vs NSH","W","5-4 OT"],["10-08","@VGK","OTL","3-4 SO"],["10-10","@COL","W","6-3"],["10-13","@UTA","L","4-5"]],
+          xg: { gp: 7, all: [21.41, 26.88, 24, 22], ev: [11.35, 16.27, 14, 19] } },
+      F: [["nylander","matthews","roslovic"],["paul","tavares","marchenko"],["mckenna","sissons","cowan"],["duhaime","blueger","macewen"]],
+      D: [["mccabe","raddysh"],["rielly","stecher"],["ekman","blankenburg"]],
+      G: ["bobrovsky","stolarz"],
+      gBadge: { bobrovsky: "Reported start", stolarz: "Backup" },
+      PP: [["marchenko","tavares","nylander","raddysh","matthews"],["cowan","roslovic","mckenna","blankenburg","rielly"]],
+      PK: [["blueger","duhaime","mccabe","stecher"],["paul","sissons","blankenburg","raddysh"]],
+      inj: [
+        {id:"tanev", pos:"D", injury:"Upper body", status:"IR", tonight:"Out", upd:"Oct 15", prog:"Hurt Oct 10 at Colorado (left after five shifts). On IR retroactive to Oct 10; Leafs announced Oct 15 he is week-to-week. Hiller gave no firm timeline. Estimated return Oct 19 to 22."},
+        {name:"Max Domi", pos:"F", injury:"Back", status:"LTIR", tonight:"Out", upd:"Sep 30", prog:"Moved from the non-roster list to long-term IR on Sep 30. Estimated earliest return Nov 21."},
+        {name:"Dakota Joshua", pos:"F", injury:"Abdomen (core)", status:"LTIR", tonight:"Out", upd:"Sep 30", prog:"Moved to long-term IR on Sep 30. Estimated earliest return Oct 24."},
+        {name:"Elvis Merzlikins", pos:"G", injury:"Shoulder", status:"LTIR", tonight:"Out", upd:"Sep 29", prog:"Expected to miss 4 to 6 months from the start of the season. Estimated return around Mar 30, 2027."},
+        {name:"Cade Webber", pos:"D", injury:"Elbow", status:"Injured non-roster", tonight:"Not on roster", upd:"Oct", prog:"Started the season on the injured non-roster list. Estimated return Oct 31."},
+        {name:"William Villeneuve", pos:"D", injury:"Knee (surgery)", status:"Injured non-roster", tonight:"Not on roster", upd:"Oct", prog:"Recovering from knee surgery, on the injured non-roster list. Estimated return Oct 31."}
+      ],
+      out: [{id:"tanev",note:"Upper body, week-to-week"},{name:"Max Domi",note:"IR"},{name:"Dakota Joshua",note:"IR"},{name:"Elvis Merzlikins",note:"IR"}],
+      scr: [{id:"groulx"},{name:"Miles Wood"},{name:"Marshall Rifai"}]
+    },
+    buf: {
+      city: "Buffalo", name: "Sabres", record: "3-3-1", side: "Away",
+      form: { gp: 7, gf: 19, ga: 26, streak: ["OT", 1], pp: [11.1, 3, 27], pk: [60.9, 9, 23],
+        last: [["10-06","vs MIN","W","3-2 OT"],["10-08","vs DAL","L","0-4"],["10-10","vs UTA","L","1-4"],["10-12","vs FLA","W","5-3"],["10-13","@MTL","OTL","3-4 SO"]],
+          xg: { gp: 7, all: [21.94, 21.14, 19, 25], ev: [15.54, 12.79, 13, 15] } },
+      F: [["krebs","thompson_t","doan"],["benson","ostlund","quinn"],["kulich","mcleod","helenius_k"],["danforth","norris","malenstyn"]],
+      D: [["samuelsson","zellweger"],["power","metsa"],["gilbert","crevier"]],
+      G: ["luukkonen","ellis"],
+      gBadge: { luukkonen: "Projected start", ellis: "Backup" },
+      PP: [["quinn","benson","ostlund","thompson_t","power"],["doan","helenius_k","norris","kulich","zellweger"]],
+      PK: [["mcleod","malenstyn","power","samuelsson"],["norris","benson","gilbert","crevier"]],
+      inj: [
+        {id:"dahlin", pos:"D", injury:"Upper body", status:"Day-to-day", tonight:"Out", upd:"Oct 15", prog:"Hurt in the second period on Oct 12 vs Florida. Ruled out for tonight. Ruff has called him day-to-day and NHL.com reports he is 50/50 for Saturday at Montreal."},
+        {name:"Jason Zucker", pos:"F", injury:"Sports hernia (abdomen)", status:"IR", tonight:"Out", upd:"Oct 13", prog:"Skated in the Oct 13 morning skate but is still a few weeks from game action. Estimated return Oct 27."},
+        {name:"Conor Timmins", pos:"D", injury:"Lower body", status:"IR", tonight:"Out", upd:"Oct 13", prog:"No timeline from the team. Earliest eligible return Oct 17 per ESPN's tracker."},
+        {name:"Matt Grzelcyk", pos:"D", injury:"Lower body (undisclosed)", status:"IR", tonight:"Out", upd:"Oct 13", prog:"On IR retroactive to Oct 1. Estimated return Oct 21. The Hockey News said he could return as soon as tonight if Dahlin could not play, but he is listed out."},
+        {name:"Alex Lyon", pos:"G", injury:"Upper body", status:"IR", tonight:"Out", upd:"Oct 15", prog:"Suffered a setback in his recovery and has no timeline to return. Colten Ellis is the backup."},
+        {name:"Jack Rathbone", pos:"D", injury:"Undisclosed", status:"Injured non-roster", tonight:"Not on roster", upd:"Oct 12", prog:"Placed on injured reserve Oct 12 for an undisclosed reason. Estimated return Oct 24."},
+        {name:"Topias Leinonen", pos:"G", injury:"Lower body", status:"Injured non-roster", tonight:"Not on roster", upd:"Oct 12", prog:"Placed on the injured non-roster list Oct 12. Estimated return Oct 24."}
+      ],
+      out: [{id:"dahlin",note:"Upper body, out"},{name:"Jason Zucker",note:"IR"},{name:"Conor Timmins",note:"IR"},{name:"Matt Grzelcyk",note:"IR"},{name:"Alex Lyon",note:"Out"}],
+      scr: [{name:"Tyson Kozak"},{name:"Sam Carrick"}]
+    }
+  }
+};const SLOTS = ["LW","C","RW"];
+
+/* n name, t team, num, pos, gp g a pm pim ppg sog toi(sec/game) fo(%) gw */
+const P = {
+  // Toronto
+  matthews:{n:"Auston Matthews",t:"tor",num:34,pos:"C",gp:7,g:5,a:7,pm:3,pim:0,ppg:2,sog:25,toi:1315,fo:56.9,gw:1},
+  nylander:{n:"William Nylander",t:"tor",num:88,pos:"L",gp:7,g:5,a:7,pm:-1,pim:0,ppg:2,sog:22,toi:1224,fo:30.0,gw:0},
+  marchenko:{n:"Kirill Marchenko",t:"tor",num:86,pos:"R",gp:7,g:1,a:5,pm:-1,pim:8,ppg:1,sog:17,toi:1143,fo:0,gw:0},
+  roslovic:{n:"Jack Roslovic",t:"tor",num:96,pos:"R",gp:7,g:3,a:2,pm:-1,pim:4,ppg:0,sog:20,toi:996,fo:44.4,gw:0},
+  tavares:{n:"John Tavares",t:"tor",num:91,pos:"C",gp:6,g:2,a:3,pm:-5,pim:4,ppg:1,sog:17,toi:1039,fo:57.8,gw:0},
+  cowan:{n:"Easton Cowan",t:"tor",num:53,pos:"R",gp:7,g:3,a:2,pm:-2,pim:4,ppg:1,sog:15,toi:896,fo:33.3,gw:2},
+  mckenna:{n:"Gavin McKenna",t:"tor",num:92,pos:"L",gp:7,g:2,a:3,pm:-2,pim:4,ppg:0,sog:12,toi:900,fo:0,gw:0},
+  paul:{n:"Nick Paul",t:"tor",num:20,pos:"L",gp:7,g:1,a:3,pm:-3,pim:4,ppg:0,sog:7,toi:944,fo:39.7,gw:0},
+  sissons:{n:"Colton Sissons",t:"tor",num:15,pos:"C",gp:7,g:1,a:0,pm:1,pim:0,ppg:0,sog:9,toi:874,fo:57.7,gw:0},
+  duhaime:{n:"Brandon Duhaime",t:"tor",num:24,pos:"L",gp:7,g:0,a:0,pm:0,pim:4,ppg:0,sog:5,toi:663,fo:40.0,gw:0},
+  blueger:{n:"Teddy Blueger",t:"tor",num:73,pos:"C",gp:7,g:0,a:0,pm:1,pim:2,ppg:0,sog:4,toi:680,fo:47.1,gw:0},
+  groulx:{n:"Bo Groulx",t:"tor",num:29,pos:"C",gp:5,g:0,a:0,pm:1,pim:2,ppg:0,sog:2,toi:479,fo:60,gw:0},
+  macewen:{n:"Zack MacEwen",t:"tor",num:19,pos:"R",gp:1,g:0,a:0,pm:0,pim:0,ppg:0,sog:0,toi:325,fo:0,gw:0},
+  mccabe:{n:"Jake McCabe",t:"tor",num:22,pos:"D",gp:7,g:0,a:0,pm:0,pim:4,ppg:0,sog:6,toi:1159,fo:0,gw:0},
+  raddysh:{n:"Darren Raddysh",t:"tor",num:43,pos:"D",gp:7,g:0,a:3,pm:-5,pim:4,ppg:0,sog:15,toi:1402,fo:0,gw:0},
+  rielly:{n:"Morgan Rielly",t:"tor",num:44,pos:"D",gp:7,g:0,a:4,pm:-3,pim:2,ppg:0,sog:7,toi:1168,fo:0,gw:0},
+  stecher:{n:"Troy Stecher",t:"tor",num:28,pos:"D",gp:7,g:0,a:0,pm:1,pim:2,ppg:0,sog:5,toi:1051,fo:0,gw:0},
+  ekman:{n:"Oliver Ekman-Larsson",t:"tor",num:95,pos:"D",gp:7,g:0,a:0,pm:-1,pim:8,ppg:0,sog:3,toi:991,fo:0,gw:0},
+  blankenburg:{n:"Nick Blankenburg",t:"tor",num:3,pos:"D",gp:2,g:1,a:0,pm:0,pim:0,ppg:0,sog:1,toi:826,fo:0,gw:0},
+  tanev:{n:"Chris Tanev",t:"tor",num:8,pos:"D",gp:6,g:0,a:1,pm:1,pim:0,ppg:0,sog:1,toi:1011,fo:0,gw:0},
+  stolarz:{n:"Anthony Stolarz",t:"tor",num:41,pos:"G",gp:3,gs:3,w:2,l:1,otl:0,gaa:"3.32",sv:".875",sa:80,ga:10,so:0},
+  bobrovsky:{n:"Sergei Bobrovsky",t:"tor",num:72,pos:"G",gp:4,gs:4,w:1,l:2,otl:1,gaa:"2.97",sv:".907",sa:129,ga:12,so:0},
+  // Utah
+  keller:{n:"Clayton Keller",t:"uta",num:9,pos:"R",gp:6,g:1,a:7,pm:-2,pim:4,ppg:1,sog:17,toi:1089.2,fo:0,gw:0},
+  schmaltz:{n:"Nick Schmaltz",t:"uta",num:8,pos:"C",gp:6,g:6,a:2,pm:-2,pim:2,ppg:4,sog:24,toi:1120,fo:45.9,gw:2},
+  crouse:{n:"Lawson Crouse",t:"uta",num:67,pos:"L",gp:6,g:1,a:1,pm:3,pim:4,ppg:0,sog:11,toi:893.7,fo:0,gw:1},
+  yamamoto:{n:"Kailer Yamamoto",t:"uta",num:56,pos:"R",gp:1,g:1,a:1,pm:2,pim:0,ppg:0,sog:2,toi:748,fo:0,gw:0},
+  cooley:{n:"Logan Cooley",t:"uta",num:92,pos:"C",gp:6,g:0,a:5,pm:-1,pim:2,ppg:0,sog:2,toi:1108.7,fo:50.7,gw:0},
+  guenther:{n:"Dylan Guenther",t:"uta",num:11,pos:"R",gp:6,g:3,a:3,pm:-1,pim:0,ppg:3,sog:22,toi:1005,fo:0,gw:1},
+  hayton:{n:"Barrett Hayton",t:"uta",num:27,pos:"C",gp:6,g:0,a:4,pm:3,pim:4,ppg:0,sog:11,toi:807,fo:50,gw:0},
+  trocheck:{n:"Vincent Trocheck",t:"uta",num:16,pos:"C",gp:6,g:1,a:1,pm:-4,pim:4,ppg:0,sog:7,toi:1019.2,fo:61.9,gw:0},
+  lee:{n:"Anders Lee",t:"uta",num:72,pos:"L",gp:6,g:2,a:3,pm:3,pim:0,ppg:0,sog:12,toi:771.5,fo:50,gw:0},
+  mcbain:{n:"Jack McBain",t:"uta",num:22,pos:"C",gp:6,g:1,a:0,pm:1,pim:12,ppg:0,sog:6,toi:784.2,fo:80,gw:0},
+  stenlund:{n:"Kevin Stenlund",t:"uta",num:82,pos:"C",gp:6,g:0,a:1,pm:0,pim:2,ppg:0,sog:4,toi:822.7,fo:49.3,gw:0},
+  but:{n:"Daniil But",t:"uta",num:19,pos:"L",gp:6,g:1,a:0,pm:1,pim:0,ppg:0,sog:6,toi:651.8,fo:33.3,gw:0},
+  carcone:{n:"Michael Carcone",t:"uta",num:53,pos:"L",gp:5,g:1,a:1,pm:1,pim:2,ppg:0,sog:17,toi:749.2,fo:50,gw:0},
+  sergachev:{n:"Mikhail Sergachev",t:"uta",num:98,pos:"D",gp:6,g:1,a:6,pm:0,pim:6,ppg:1,sog:15,toi:1325.3,fo:0,gw:0},
+  weegar:{n:"MacKenzie Weegar",t:"uta",num:52,pos:"D",gp:6,g:1,a:0,pm:1,pim:20,ppg:0,sog:10,toi:1211.8,fo:0,gw:0},
+  schmidt:{n:"Nate Schmidt",t:"uta",num:88,pos:"D",gp:6,g:0,a:1,pm:0,pim:0,ppg:0,sog:8,toi:1250,fo:0,gw:0},
+  marino:{n:"John Marino",t:"uta",num:6,pos:"D",gp:6,g:1,a:2,pm:0,pim:2,ppg:1,sog:5,toi:1208,fo:0,gw:0},
+  simashev:{n:"Dmitri Simashev",t:"uta",num:26,pos:"D",gp:6,g:0,a:2,pm:3,pim:2,ppg:0,sog:6,toi:923.7,fo:0,gw:0},
+  peeke:{n:"Andrew Peeke",t:"uta",num:20,pos:"D",gp:6,g:1,a:1,pm:1,pim:4,ppg:0,sog:6,toi:914.5,fo:0,gw:0},
+  vejmelka:{n:"Karel Vejmelka",t:"uta",num:70,pos:"G",gp:5,gs:4,w:3,l:1,otl:0,gaa:"2.13",sv:".907",sa:107,ga:10,so:1},
+  cossa:{n:"Sebastian Cossa",t:"uta",num:33,pos:"G",gp:2,gs:2,w:1,l:1,otl:0,gaa:"3.16",sv:".852",sa:27,ga:4,so:0},
+  // Edmonton and Los Angeles
+  mcdavid:{n:"Connor McDavid",t:"edm",num:97,pos:"C",gp:5,g:3,a:10,pm:12,pim:0,ppg:0,sog:12,toi:1437.2,fo:49.2,gw:0},
+  draisaitl:{n:"Leon Draisaitl",t:"edm",num:29,pos:"R",gp:5,g:3,a:6,pm:9,pim:0,ppg:1,sog:21,toi:1281.8,fo:57.4,gw:1},
+  podkolzin:{n:"Vasily Podkolzin",t:"edm",num:92,pos:"L",gp:5,g:5,a:2,pm:7,pim:2,ppg:2,sog:17,toi:1149.4,fo:33.3,gw:1},
+  hallander:{n:"Filip Hallander",t:"edm",num:19,pos:"L",gp:1,g:0,a:0,pm:0,pim:0,ppg:0,sog:1,toi:851.0,fo:0,gw:0},
+  dickinson:{n:"Jason Dickinson",t:"edm",num:16,pos:"C",gp:2,g:0,a:0,pm:0,pim:0,ppg:0,sog:1,toi:698.0,fo:48.0,gw:0},
+  kapanen:{n:"Kasperi Kapanen",t:"edm",num:42,pos:"R",gp:5,g:2,a:1,pm:-4,pim:2,ppg:1,sog:9,toi:1060.6,fo:100.0,gw:1},
+  formenton:{n:"Alex Formenton",t:"edm",num:26,pos:"L",gp:5,g:1,a:2,pm:4,pim:0,ppg:0,sog:6,toi:897.2,fo:0,gw:0},
+  michaels:{n:"Owen Michaels",t:"edm",num:43,pos:"C",gp:5,g:2,a:0,pm:0,pim:0,ppg:0,sog:6,toi:763.8,fo:60.0,gw:0},
+  joseph:{n:"Mathieu Joseph",t:"edm",num:21,pos:"R",gp:5,g:0,a:2,pm:0,pim:2,ppg:0,sog:4,toi:894.6,fo:0,gw:0},
+  frederic:{n:"Trent Frederic",t:"edm",num:10,pos:"L",gp:5,g:1,a:0,pm:1,pim:7,ppg:0,sog:6,toi:599.4,fo:33.3,gw:0},
+  samanski:{n:"Josh Samanski",t:"edm",num:81,pos:"C",gp:4,g:0,a:1,pm:1,pim:4,ppg:0,sog:0,toi:467.0,fo:57.7,gw:0},
+  howard:{n:"Isaac Howard",t:"edm",num:53,pos:"R",gp:5,g:0,a:2,pm:1,pim:2,ppg:0,sog:5,toi:594.0,fo:0,gw:0},
+  ekholm:{n:"Mattias Ekholm",t:"edm",num:14,pos:"D",gp:5,g:1,a:1,pm:11,pim:10,ppg:0,sog:5,toi:1308.2,fo:0,gw:0},
+  bouchard:{n:"Evan Bouchard",t:"edm",num:2,pos:"D",gp:5,g:6,a:6,pm:12,pim:0,ppg:0,sog:17,toi:1491.8,fo:0,gw:1},
+  shea:{n:"Ryan Shea",t:"edm",num:6,pos:"D",gp:5,g:1,a:2,pm:4,pim:0,ppg:0,sog:3,toi:1389.6,fo:0,gw:0},
+  murphy:{n:"Connor Murphy",t:"edm",num:5,pos:"D",gp:5,g:0,a:1,pm:1,pim:10,ppg:0,sog:3,toi:1276.2,fo:0,gw:0},
+  mukhamadullin:{n:"Shakir Mukhamadullin",t:"edm",num:85,pos:"D",gp:3,g:0,a:0,pm:-5,pim:0,ppg:0,sog:0,toi:687.3,fo:0,gw:0},
+  emberson:{n:"Ty Emberson",t:"edm",num:49,pos:"D",gp:3,g:0,a:0,pm:0,pim:0,ppg:0,sog:0,toi:674.0,fo:0,gw:0},
+  hyman:{n:"Zach Hyman",t:"edm",num:18,pos:"L",gp:1,g:0,a:0,pm:1,pim:0,ppg:0,sog:3,toi:1233.0,fo:0,gw:0},
+  walman:{n:"Jake Walman",t:"edm",num:96,pos:"D",gp:4,g:0,a:0,pm:-3,pim:4,ppg:0,sog:5,toi:887.3,fo:0,gw:0},
+  dach:{n:"Colton Dach",t:"edm",num:34,pos:"C",gp:3,g:0,a:0,pm:-4,pim:2,ppg:0,sog:5,toi:802.7,fo:54.8,gw:0},
+  panarin:{n:"Artemi Panarin",t:"lak",num:10,pos:"L",gp:4,g:3,a:1,pm:-4,pim:2,ppg:1,sog:15,toi:1262.5,fo:0,gw:0},
+  byfield:{n:"Quinton Byfield",t:"lak",num:55,pos:"C",gp:4,g:1,a:1,pm:-4,pim:0,ppg:1,sog:10,toi:1242.8,fo:60.3,gw:0},
+  kempe:{n:"Adrian Kempe",t:"lak",num:9,pos:"R",gp:4,g:1,a:2,pm:-3,pim:2,ppg:1,sog:15,toi:1239.8,fo:42.9,gw:0},
+  moore:{n:"Trevor Moore",t:"lak",num:12,pos:"L",gp:4,g:1,a:0,pm:-1,pim:0,ppg:0,sog:7,toi:970.5,fo:0,gw:0},
+  haula:{n:"Erik Haula",t:"lak",num:56,pos:"C",gp:4,g:1,a:2,pm:-1,pim:0,ppg:0,sog:10,toi:951.8,fo:45.1,gw:0},
+  laferriere:{n:"Alex Laferriere",t:"lak",num:14,pos:"R",gp:4,g:1,a:2,pm:1,pim:2,ppg:0,sog:7,toi:1027.8,fo:100.0,gw:0},
+  armia:{n:"Joel Armia",t:"lak",num:40,pos:"L",gp:4,g:1,a:0,pm:0,pim:0,ppg:0,sog:4,toi:771.0,fo:50.0,gw:0},
+  laughton:{n:"Scott Laughton",t:"lak",num:21,pos:"C",gp:4,g:0,a:0,pm:-1,pim:7,ppg:0,sog:7,toi:863.5,fo:60.4,gw:0},
+  wright:{n:"Jared Wright",t:"lak",num:25,pos:"R",gp:1,g:0,a:0,pm:0,pim:0,ppg:0,sog:3,toi:624.0,fo:0,gw:0},
+  lee_a:{n:"Andre Lee",t:"lak",num:47,pos:"L",gp:2,g:0,a:0,pm:0,pim:2,ppg:0,sog:2,toi:561.5,fo:0,gw:0},
+  helenius:{n:"Samuel Helenius",t:"lak",num:79,pos:"C",gp:2,g:0,a:0,pm:0,pim:0,ppg:0,sog:1,toi:482.0,fo:35.7,gw:0},
+  perry:{n:"Corey Perry",t:"lak",num:90,pos:"R",gp:3,g:0,a:0,pm:1,pim:0,ppg:0,sog:4,toi:710.3,fo:0,gw:0},
+  edmundson:{n:"Joel Edmundson",t:"lak",num:6,pos:"D",gp:4,g:0,a:0,pm:0,pim:7,ppg:0,sog:4,toi:864.3,fo:0,gw:0},
+  clarke:{n:"Brandt Clarke",t:"lak",num:92,pos:"D",gp:4,g:0,a:3,pm:-4,pim:13,ppg:0,sog:9,toi:1137.8,fo:0,gw:0},
+  dumoulin:{n:"Brian Dumoulin",t:"lak",num:2,pos:"D",gp:4,g:1,a:0,pm:-1,pim:2,ppg:0,sog:4,toi:977.8,fo:0,gw:0},
+  doughty:{n:"Drew Doughty",t:"lak",num:8,pos:"D",gp:4,g:0,a:1,pm:-1,pim:6,ppg:0,sog:1,toi:1255.0,fo:0,gw:0},
+  anderson:{n:"Mikey Anderson",t:"lak",num:44,pos:"D",gp:4,g:0,a:1,pm:-1,pim:2,ppg:0,sog:3,toi:1107.5,fo:0,gw:0},
+  ceci:{n:"Cody Ceci",t:"lak",num:5,pos:"D",gp:4,g:0,a:1,pm:3,pim:0,ppg:0,sog:3,toi:1122.0,fo:0,gw:0},
+  turcotte:{n:"Alex Turcotte",t:"lak",num:15,pos:"C",gp:3,g:0,a:1,pm:1,pim:4,ppg:0,sog:1,toi:846.3,fo:50.0,gw:0},
+  zuccarello:{n:"Mats Zuccarello",t:"lak",num:36,pos:"R",gp:3,g:0,a:1,pm:1,pim:0,ppg:0,sog:1,toi:1091.0,fo:0,gw:0},
+  levi:{n:"Devon Levi",t:"edm",num:27,pos:"G",gp:3,gs:3,w:3,l:0,otl:0,gaa:"3.35",sv:".863",sa:73,ga:10,so:0},
+  jarry:{n:"Tristan Jarry",t:"edm",num:35,pos:"G",gp:2,gs:2,w:1,l:0,otl:1,gaa:"3.46",sv:".837",sa:43,ga:7,so:0},
+  kuemper:{n:"Darcy Kuemper",t:"lak",num:35,pos:"G",gp:3,gs:3,w:0,l:2,otl:1,gaa:"4.03",sv:".868",sa:91,ga:12,so:0},
+  forsberg:{n:"Anton Forsberg",t:"lak",num:31,pos:"G",gp:1,gs:1,w:0,l:0,otl:1,gaa:"4.77",sv:".800",sa:25,ga:5,so:0},
+  // Montreal and Washington
+  kreider:{n:"Chris Kreider",t:"mtl",num:22,pos:"L",gp:6,g:1,a:3,pm:0,pim:2,ppg:0,sog:5,toi:899.67,fo:66.67,gw:0},
+  danault:{n:"Phillip Danault",t:"mtl",num:24,pos:"C",gp:6,g:0,a:1,pm:1,pim:0,ppg:0,sog:9,toi:942.83,fo:55.26,gw:0},
+  matheson:{n:"Mike Matheson",t:"mtl",num:8,pos:"D",gp:5,g:0,a:1,pm:-3,pim:6,ppg:0,sog:9,toi:1449.2,fo:0,gw:0},
+  anderson_j:{n:"Josh Anderson",t:"mtl",num:17,pos:"R",gp:6,g:2,a:2,pm:2,pim:8,ppg:0,sog:12,toi:812,fo:100,gw:0},
+  evans:{n:"Jake Evans",t:"mtl",num:71,pos:"C",gp:6,g:0,a:0,pm:-3,pim:2,ppg:0,sog:6,toi:819.67,fo:53.01,gw:0},
+  carrier:{n:"Alexandre Carrier",t:"mtl",num:45,pos:"D",gp:6,g:1,a:1,pm:3,pim:2,ppg:0,sog:8,toi:1108.67,fo:0,gw:1},
+  suzuki:{n:"Nick Suzuki",t:"mtl",num:14,pos:"C",gp:6,g:3,a:5,pm:3,pim:2,ppg:0,sog:17,toi:1339,fo:50.88,gw:0},
+  texier:{n:"Alexandre Texier",t:"mtl",num:85,pos:"R",gp:6,g:0,a:2,pm:-1,pim:4,ppg:0,sog:9,toi:796.67,fo:0,gw:0},
+  dobson:{n:"Noah Dobson",t:"mtl",num:53,pos:"D",gp:6,g:0,a:1,pm:-2,pim:8,ppg:0,sog:9,toi:1288.5,fo:0,gw:0},
+  dach_k:{n:"Kirby Dach",t:"mtl",num:77,pos:"R",gp:6,g:0,a:1,pm:-3,pim:6,ppg:0,sog:1,toi:573.67,fo:50,gw:0},
+  caufield:{n:"Cole Caufield",t:"mtl",num:13,pos:"L",gp:6,g:3,a:1,pm:1,pim:4,ppg:0,sog:24,toi:1195.5,fo:50,gw:0},
+  newhook:{n:"Alex Newhook",t:"mtl",num:15,pos:"C",gp:6,g:1,a:1,pm:-3,pim:4,ppg:0,sog:5,toi:978.17,fo:59.38,gw:0},
+  guhle:{n:"Kaiden Guhle",t:"mtl",num:21,pos:"D",gp:2,g:0,a:0,pm:0,pim:0,ppg:0,sog:2,toi:1229,fo:0,gw:0},
+  bolduc:{n:"Zachary Bolduc",t:"mtl",num:76,pos:"L",gp:6,g:3,a:1,pm:2,pim:2,ppg:1,sog:11,toi:833.17,fo:0,gw:0},
+  xhekaj_a:{n:"Arber Xhekaj",t:"mtl",num:72,pos:"D",gp:6,g:0,a:0,pm:-2,pim:12,ppg:0,sog:2,toi:692,fo:0,gw:0},
+  beck:{n:"Owen Beck",t:"mtl",num:62,pos:"L",gp:1,g:0,a:0,pm:-1,pim:0,ppg:0,sog:1,toi:419,fo:0,gw:0},
+  hutson_l:{n:"Lane Hutson",t:"mtl",num:48,pos:"D",gp:6,g:1,a:5,pm:1,pim:2,ppg:1,sog:13,toi:1609,fo:0,gw:0},
+  slafkovsky:{n:"Juraj Slafkovsky",t:"mtl",num:20,pos:"R",gp:6,g:1,a:2,pm:-1,pim:4,ppg:0,sog:18,toi:1150.5,fo:16.67,gw:0},
+  engstrom:{n:"Adam Engstrom",t:"mtl",num:42,pos:"D",gp:3,g:0,a:0,pm:0,pim:0,ppg:0,sog:3,toi:641.67,fo:0,gw:0},
+  xhekaj_f:{n:"Florian Xhekaj",t:"mtl",num:63,pos:"L",gp:2,g:0,a:0,pm:-4,pim:0,ppg:0,sog:2,toi:456,fo:0,gw:0},
+  demidov:{n:"Ivan Demidov",t:"mtl",num:93,pos:"R",gp:2,g:1,a:1,pm:0,pim:2,ppg:0,sog:4,toi:937,fo:0,gw:0},
+  ovechkin:{n:"Alex Ovechkin",t:"wsh",num:8,pos:"R",gp:6,g:1,a:1,pm:1,pim:0,ppg:0,sog:10,toi:843.33,fo:0,gw:0},
+  holl:{n:"Justin Holl",t:"wsh",num:null,pos:"D",gp:1,g:1,a:0,pm:1,pim:0,ppg:0,sog:1,toi:725,fo:0,gw:0},
+  jenner:{n:"Boone Jenner",t:"wsh",num:22,pos:"C",gp:6,g:3,a:1,pm:1,pim:2,ppg:0,sog:18,toi:942.67,fo:62.65,gw:1},
+  wilson:{n:"Tom Wilson",t:"wsh",num:43,pos:"R",gp:6,g:2,a:3,pm:1,pim:12,ppg:0,sog:10,toi:1159.5,fo:0,gw:0},
+  tuch:{n:"Alex Tuch",t:"wsh",num:89,pos:"L",gp:6,g:3,a:0,pm:2,pim:0,ppg:0,sog:16,toi:1132.17,fo:43.75,gw:2},
+  strome:{n:"Dylan Strome",t:"wsh",num:17,pos:"C",gp:6,g:0,a:5,pm:1,pim:2,ppg:0,sog:11,toi:969.33,fo:48.89,gw:0},
+  beauvillier:{n:"Anthony Beauvillier",t:"wsh",num:72,pos:"R",gp:6,g:1,a:0,pm:2,pim:0,ppg:0,sog:8,toi:675.33,fo:50,gw:0},
+  roy:{n:"Matt Roy",t:"wsh",num:3,pos:"D",gp:2,g:0,a:0,pm:0,pim:0,ppg:0,sog:0,toi:1105.5,fo:0,gw:0},
+  chychrun:{n:"Jakob Chychrun",t:"wsh",num:6,pos:"D",gp:6,g:1,a:2,pm:-1,pim:12,ppg:1,sog:19,toi:1479.83,fo:0,gw:0},
+  kyrou:{n:"Jordan Kyrou",t:"wsh",num:25,pos:"R",gp:6,g:1,a:1,pm:-6,pim:0,ppg:0,sog:6,toi:776.67,fo:33.33,gw:0},
+  dubois:{n:"Pierre-Luc Dubois",t:"wsh",num:80,pos:"C",gp:4,g:1,a:3,pm:4,pim:6,ppg:0,sog:6,toi:1026.25,fo:46.55,gw:0},
+  desharnais:{n:"Vincent Desharnais",t:"wsh",num:73,pos:"D",gp:6,g:0,a:1,pm:8,pim:5,ppg:0,sog:2,toi:1178.33,fo:0,gw:0},
+  liljegren:{n:"Timothy Liljegren",t:"wsh",num:27,pos:"D",gp:6,g:1,a:0,pm:-2,pim:0,ppg:0,sog:4,toi:1124.17,fo:0,gw:0},
+  fehervary:{n:"Martin Fehervary",t:"wsh",num:42,pos:"D",gp:6,g:0,a:0,pm:1,pim:4,ppg:0,sog:1,toi:1336.33,fo:0,gw:0},
+  protas_a:{n:"Aliaksei Protas",t:"wsh",num:21,pos:"L",gp:6,g:0,a:2,pm:-3,pim:2,ppg:0,sog:7,toi:953.67,fo:71.43,gw:0},
+  sourdif:{n:"Justin Sourdif",t:"wsh",num:34,pos:"C",gp:6,g:1,a:0,pm:-2,pim:6,ppg:0,sog:4,toi:777.33,fo:48.57,gw:0},
+  frank:{n:"Ethen Frank",t:"wsh",num:53,pos:"L",gp:2,g:0,a:0,pm:0,pim:0,ppg:0,sog:2,toi:583,fo:0,gw:0},
+  leonard:{n:"Ryan Leonard",t:"wsh",num:9,pos:"L",gp:6,g:2,a:4,pm:3,pim:8,ppg:1,sog:16,toi:821.17,fo:0,gw:0},
+  hutson_c:{n:"Cole Hutson",t:"wsh",num:44,pos:"D",gp:6,g:1,a:2,pm:1,pim:6,ppg:0,sog:14,toi:1122,fo:0,gw:0},
+  protas_i:{n:"Ilya Protas",t:"wsh",num:62,pos:"C",gp:6,g:0,a:2,pm:-2,pim:0,ppg:0,sog:5,toi:700.33,fo:42.55,gw:0},
+  dobes:{n:"Jakub Dobes",t:"mtl",num:75,pos:"G",gp:3,gs:3,w:1,l:1,otl:1,gaa:"4.43",sv:".856",sa:90,ga:13,so:0},
+  fowler:{n:"Jacob Fowler",t:"mtl",num:32,pos:"G",gp:3,gs:3,w:2,l:1,otl:0,gaa:"1.91",sv:".906",sa:64,ga:6,so:1},
+  lindgren:{n:"Charlie Lindgren",t:"wsh",num:79,pos:"G",gp:1,gs:1,w:0,l:1,otl:0,gaa:"2.08",sv:".931",sa:29,ga:2,so:0},
+  thompson:{n:"Logan Thompson",t:"wsh",num:48,pos:"G",gp:5,gs:5,w:3,l:2,otl:0,gaa:"2.84",sv:".904",sa:146,ga:14,so:0},
+  // Buffalo
+  krebs:{n:"Peyton Krebs",t:"buf",num:19,pos:"L",gp:7,g:0,a:4,pm:0,pim:9,ppg:0,sog:5,toi:869.4,fo:50.0,gw:0},
+  thompson_t:{n:"Tage Thompson",t:"buf",num:72,pos:"C",gp:7,g:4,a:3,pm:5,pim:4,ppg:1,sog:31,toi:1194.0,fo:44.1,gw:0},
+  doan:{n:"Josh Doan",t:"buf",num:91,pos:"R",gp:7,g:1,a:0,pm:2,pim:4,ppg:0,sog:12,toi:973.9,fo:50.0,gw:0},
+  benson:{n:"Zach Benson",t:"buf",num:6,pos:"L",gp:7,g:0,a:3,pm:0,pim:4,ppg:0,sog:11,toi:1168.0,fo:33.3,gw:0},
+  ostlund:{n:"Noah Ostlund",t:"buf",num:86,pos:"C",gp:7,g:2,a:2,pm:1,pim:0,ppg:1,sog:18,toi:1101.6,fo:35.4,gw:1},
+  quinn:{n:"Jack Quinn",t:"buf",num:22,pos:"R",gp:7,g:2,a:2,pm:-1,pim:4,ppg:0,sog:18,toi:1170.7,fo:100.0,gw:0},
+  kulich:{n:"Jiri Kulich",t:"buf",num:20,pos:"L",gp:6,g:1,a:1,pm:2,pim:0,ppg:0,sog:8,toi:786.2,fo:43.2,gw:1},
+  mcleod:{n:"Ryan McLeod",t:"buf",num:71,pos:"C",gp:7,g:1,a:1,pm:-5,pim:2,ppg:0,sog:5,toi:906.9,fo:55.3,gw:0},
+  helenius_k:{n:"Konsta Helenius",t:"buf",num:94,pos:"R",gp:6,g:1,a:0,pm:-2,pim:0,ppg:0,sog:7,toi:855.7,fo:0.0,gw:0},
+  danforth:{n:"Justin Danforth",t:"buf",num:15,pos:"L",gp:4,g:0,a:0,pm:1,pim:2,ppg:0,sog:1,toi:603.5,fo:51.6,gw:0},
+  norris:{n:"Josh Norris",t:"buf",num:9,pos:"C",gp:7,g:1,a:1,pm:-1,pim:4,ppg:0,sog:8,toi:888.9,fo:58.1,gw:0},
+  malenstyn:{n:"Beck Malenstyn",t:"buf",num:29,pos:"R",gp:7,g:0,a:2,pm:-2,pim:4,ppg:0,sog:1,toi:592.4,fo:50.0,gw:0},
+  samuelsson:{n:"Mattias Samuelsson",t:"buf",num:23,pos:"D",gp:7,g:1,a:3,pm:-2,pim:4,ppg:0,sog:8,toi:1325.4,fo:0,gw:0},
+  zellweger:{n:"Olen Zellweger",t:"buf",num:8,pos:"D",gp:6,g:2,a:1,pm:0,pim:6,ppg:0,sog:11,toi:1124.7,fo:0,gw:0},
+  power:{n:"Owen Power",t:"buf",num:25,pos:"D",gp:7,g:1,a:6,pm:3,pim:2,ppg:0,sog:6,toi:1586.1,fo:0,gw:1},
+  metsa:{n:"Zach Metsa",t:"buf",num:73,pos:"D",gp:7,g:0,a:1,pm:0,pim:5,ppg:0,sog:2,toi:761.9,fo:0,gw:0},
+  gilbert:{n:"Dennis Gilbert",t:"buf",num:44,pos:"D",gp:1,g:0,a:1,pm:1,pim:0,ppg:0,sog:0,toi:521.0,fo:0,gw:0},
+  crevier:{n:"Louis Crevier",t:"buf",num:46,pos:"D",gp:7,g:0,a:1,pm:-2,pim:2,ppg:0,sog:8,toi:890.9,fo:0,gw:0},
+  dahlin:{n:"Rasmus Dahlin",t:"buf",num:26,pos:"D",gp:6,g:2,a:2,pm:0,pim:2,ppg:1,sog:19,toi:1418.0,fo:0,gw:0},
+  luukkonen:{n:"Ukko-Pekka Luukkonen",t:"buf",num:1,pos:"G",gp:5,gs:4,w:2,l:2,otl:1,gaa:"3.46",sv:".850",sa:107,ga:16,so:0},
+  ellis:{n:"Colten Ellis",t:"buf",num:92,pos:"G",gp:3,gs:3,w:1,l:1,otl:0,gaa:"3.19",sv:".864",sa:59,ga:8,so:0}
+};
+/* Bio, last season (2025-26) and career. Skaters: ls [gp,g,a,pm,pim,ppg,sog,toi], c [gp,g,a,pm].
+   Goalies: ls [gp,gs,w,l,otl,gaa,sv,so], c [gp,w,l,otl,gaa,sv,so]. d = [year, round, overall, team] or null. */
+const mk = (ht, wt, h, dob, b, d, ls, c) => ({ ht, wt, h, dob, b, d, ls, c });
+const BIO = {
+  // Toronto
+  matthews: mk(75,214,"L","1997-09-17","San Ramon, California, USA",[2016,1,1,"TOR"],[60,27,26,-4,18,5,227,"20:48"],[695,432,358,149]),
+  nylander: mk(72,200,"R","1996-05-01","Calgary, Alberta, CAN",[2014,1,8,"TOR"],[65,30,49,-14,16,7,156,"19:25"],[756,297,405,19]),
+  marchenko: mk(75,201,"R","2000-07-21","Barnaul, RUS",[2018,2,49,"CBJ"],[76,27,40,7,32,6,218,"18:57"],[298,103,110,6]),
+  roslovic: mk(73,195,"R","1997-01-29","Columbus, Ohio, USA",[2015,1,25,"WPG"],[69,21,15,-9,16,4,141,"15:46"],[599,124,175,-44]),
+  tavares: mk(73,211,"L","1990-09-20","Mississauga, Ontario, CAN",[2009,1,1,"NYI"],[82,31,40,-28,28,12,192,"18:11"],[1271,526,662,-53]),
+  cowan: mk(72,189,"L","2005-05-20","Mount Brydges, Ontario, CAN",[2023,1,28,"TOR"],[66,11,18,-5,45,2,92,"14:43"],[72,14,20,-4]),
+  mckenna: mk(71,164,"L","2007-12-20","Whitehorse, Yukon, CAN",[2026,1,1,"TOR"],null,[6,1,3,-1]),
+  paul: mk(75,225,"L","1995-03-20","Mississauga, Ontario, CAN",[2013,4,101,"DAL"],[51,7,8,-15,32,1,68,"13:41"],[541,104,111,-39]),
+  sissons: mk(73,207,"R","1993-11-05","North Vancouver, British Columbia, CAN",[2012,2,50,"NSH"],[66,6,5,-11,28,0,74,"12:30"],[760,102,131,6]),
+  duhaime: mk(74,213,"L","1997-05-22","Coral Springs, Florida, USA",[2016,4,106,"MIN"],[82,4,5,-2,78,0,64,"11:04"],[375,33,37,0]),
+  blueger: mk(72,185,"L","1994-08-15","Riga, LVA",[2012,2,52,"PIT"],[35,9,8,-12,22,1,51,"16:31"],[457,58,111,6]),
+  groulx: mk(74,202,"L","2000-02-06","Rouen, FRA",[2018,2,54,"ANA"],[13,3,2,4,0,0,15,"15:42"],[80,4,6,-5]),
+  macewen: mk(76,226,"R","1996-07-08","Charlottetown, Prince Edward Island, CAN",null,[3,0,0,0,0,0,4,"6:20"],[241,17,17,-30]),
+  mccabe: mk(73,205,"L","1993-10-12","Eau Claire, Wisconsin, USA",[2012,2,44,"BUF"],[80,5,20,3,64,0,77,"22:24"],[729,40,160,12]),
+  raddysh: mk(73,204,"R","1996-02-28","Toronto, Ontario, CAN",null,[73,22,48,21,72,10,212,"22:42"],[255,35,110,20]),
+  rielly: mk(73,224,"L","1994-03-09","Vancouver, British Columbia, CAN",[2012,1,5,"TOR"],[78,11,25,-18,29,1,141,null],[951,98,451,-41]),
+  stecher: mk(71,184,"R","1994-04-07","Richmond, British Columbia, CAN",null,[64,3,11,-8,20,0,64,"19:11"],[628,25,106,-31]),
+  ekman: mk(74,191,"L","1991-07-17","Karlskrona, SWE",[2009,1,6,"PHX"],[78,8,31,-6,70,0,108,"20:36"],[1143,156,383,-111]),
+  blankenburg: mk(69,177,"R","1998-05-12","Washington, Michigan, USA",null,[61,8,16,-10,10,3,72,"16:48"],[176,18,40,-30]),
+  tanev: mk(75,199,"R","1989-12-20","Toronto, Ontario, CAN",null,[11,0,2,8,0,0,8,"17:58"],[880,36,174,161]),
+  stolarz: mk(78,248,"L","1994-01-20","Edison, New Jersey, USA",[2012,2,45,"PHI"],[26,25,10,10,3,"3.28",".893",0],[170,76,49,15,"2.66",".914",12]),
+  bobrovsky: mk(74,187,"L","1988-09-20","Novokuznetsk, RUS",null,[52,51,27,23,1,"3.07",".877",4],[808,456,268,58,"2.61",".912",53]),
+  // Utah
+  keller: mk(70,175,"L","1998-07-29","Chesterfield, Missouri, USA",[2016,1,7,"ARI"],[82,26,62,21,38,3,225,"19:05"],[689,223,381,-54]),
+  schmaltz: mk(72,184,"R","1996-02-23","Madison, Wisconsin, USA",[2014,1,20,"CHI"],[82,33,41,17,28,11,206,"19:43"],[676,181,324,-10]),
+  crouse: mk(76,214,"L","1997-06-23","Mt. Brydges, Ontario, CAN",[2015,1,11,"FLA"],[81,24,20,20,46,1,141,"16:36"],[670,140,121,-32]),
+  yamamoto: mk(69,178,"R","1998-09-29","Spokane, Washington, USA",[2017,1,22,"EDM"],[59,13,10,11,14,0,60,"11:48"],[374,73,87,30]),
+  cooley: mk(72,191,"L","2004-05-04","Pittsburgh, Pennsylvania, USA",[2022,1,3,"ARI"],[54,24,19,3,28,6,102,"17:20"],[217,69,88,-10]),
+  guenther: mk(73,191,"R","2003-04-10","Edmonton, Alberta, CAN",[2021,1,9,"ARI"],[79,40,33,7,28,9,242,"17:24"],[233,94,95,-6]),
+  hayton: mk(73,200,"L","2000-06-09","Peterborough, Ontario, CAN",[2018,1,5,"ARI"],[67,10,15,3,54,4,119,"15:07"],[360,65,90,-28]),
+  trocheck: mk(71,187,"R","1993-07-11","Pittsburgh, Pennsylvania, USA",[2011,3,64,"FLA"],[67,16,37,-16,64,2,114,"20:33"],[874,240,393,-9]),
+  lee: mk(75,234,"L","1990-07-03","Edina, Minnesota, USA",[2009,6,152,"NYI"],[82,19,23,0,44,5,199,"15:38"],[928,309,243,22]),
+  mcbain: mk(76,219,"L","2000-01-06","Toronto, Ontario, CAN",[2018,3,63,"MIN"],[75,9,16,11,84,0,106,"13:51"],[318,44,63,13]),
+  stenlund: mk(75,213,"R","1996-09-20","Stockholm, SWE",[2015,2,58,"CBJ"],[80,4,14,-9,24,0,66,"14:29"],[368,46,44,-24]),
+  but: mk(77,203,"R","2005-02-15","Yaroslavl, RUS",[2023,1,12,"ARI"],[29,3,4,1,8,1,43,"12:28"],[34,4,4,2]),
+  carcone: mk(69,182,"L","1996-05-19","Ajax, Ontario, CAN",null,[79,16,15,4,22,3,147,"12:44"],[236,50,38,-10]),
+  sergachev: mk(75,212,"L","1998-06-25","Nizhnekamsk, RUS",[2016,1,9,"MTL"],[78,10,49,2,44,5,159,"24:18"],[636,74,302,41]),
+  weegar: mk(72,206,"R","1994-01-07","Ottawa, Ontario, CAN",[2013,7,206,"FLA"],[79,4,24,-33,88,0,154,"22:28"],[634,64,216,79]),
+  schmidt: mk(72,197,"L","1991-07-16","St. Cloud, Minnesota, USA",null,[82,5,17,31,22,0,86,null],[823,57,204,137]),
+  marino: mk(73,200,"R","1997-05-21","North Easton, Massachusetts, USA",[2015,6,154,"EDM"],[80,4,32,42,16,0,55,"20:12"],[449,24,136,81]),
+  simashev: mk(76,198,"L","2005-02-04","Kostroma, RUS",[2023,1,6,"ARI"],[28,0,1,-11,23,0,26,"15:06"],[33,0,3,-8]),
+  peeke: mk(75,214,"R","1998-03-17","Parkland, Florida, USA",[2016,2,34,"CBJ"],[77,5,9,-12,22,0,82,"19:23"],[386,16,59,-81]),
+  vejmelka: mk(76,221,"R","1996-05-25","Trebic, CZE",[2015,5,145,"NSH"],[64,63,38,20,3,"2.75",".897",2],[266,110,118,22,"3.09",".899",9]),
+  cossa: mk(78,221,"L","2002-11-21","Hamilton, Ontario, CAN",[2021,1,15,"DET"],null,[3,2,1,0,"2.98",".854",0]),
+  // Edmonton and Los Angeles
+  mcdavid: mk(74,190,"L","1997-01-13","Richmond Hill, Ontario, CAN",[2015, 1, 1, "EDM"],[82, 48, 90, 17, 44, 13, 306, "22:59"],[799, 412, 821, 198]),
+  draisaitl: mk(75,215,"L","1995-10-27","Cologne, DEU",[2014, 1, 3, "EDM"],[65, 35, 62, 13, 26, 16, 186, "21:35"],[860, 437, 625, 109]),
+  podkolzin: mk(73,212,"L","2001-06-24","Moscow, RUS",[2019, 1, 10, "VAN"],[82, 19, 18, 16, 63, 1, 139, "15:23"],[306, 50, 53, 22]),
+  hallander: mk(74,207,"L","2000-06-29","Sundsvall, SWE",[2018, 2, 58, "PIT"],[13, 1, 3, 4, 2, 0, 22, "13:09"],[19, 2, 5, 8]),
+  dickinson: mk(74,204,"L","1995-07-04","Georgetown, Ontario, CAN",[2013, 1, 29, "DAL"],[64, 7, 10, -10, 20, 0, 73, "15:32"],[566, 75, 97, -37]),
+  kapanen: mk(73,197,"R","1996-07-23","Kuopio, FIN",[2014, 1, 22, "PIT"],[41, 8, 9, 5, 14, 0, 65, "14:35"],[573, 100, 142, -11]),
+  formenton: mk(75,193,"L","1999-09-13","Barrie, Ontario, CAN",[2017, 2, 47, "OTT"],null,[114, 24, 18, -5]),
+  michaels: mk(73,184,"R","2002-05-01","Detroit, Michigan, USA",null,null,[5, 2, 0, 0]),
+  joseph: mk(73,188,"L","1997-02-09","Laval, Quebec, CAN",[2015, 4, 120, "TBL"],[51, 2, 9, -7, 9, 0, 36, "11:59"],[476, 61, 101, 6]),
+  frederic: mk(75,218,"L","1998-02-11","St. Louis, Missouri, USA",[2016, 1, 29, "BOS"],[74, 4, 3, -15, 58, 0, 77, "11:02"],[412, 59, 57, 3]),
+  samanski: mk(74,198,"L","2002-03-22","Erding, DEU",null,[24, 2, 2, 2, 6, 0, 9, "10:34"],[28, 2, 3, 3]),
+  howard: mk(70,185,"L","2004-03-30","Hudson, Wisconsin, USA",[2022, 1, 31, "TBL"],[29, 2, 3, -6, 12, 0, 36, "10:19"],[29, 2, 3, -6]),
+  ekholm: mk(76,211,"L","1990-05-24","Borlange, SWE",[2009, 4, 102, "NSH"],[82, 6, 35, 32, 30, 0, 131, "20:36"],[967, 92, 309, 221]),
+  bouchard: mk(74,196,"R","1999-10-20","Oakville, Ontario, CAN",[2018, 1, 10, "EDM"],[82, 21, 74, 25, 30, 7, 221, "24:41"],[434, 82, 263, 94]),
+  shea: mk(73,195,"L","1997-02-11","Milton, Massachusetts, USA",[2015, 4, 121, "CHI"],[80, 6, 29, 30, 22, 0, 72, "18:53"],[154, 10, 34, 26]),
+  murphy: mk(76,210,"R","1993-03-26","Boston, Massachusetts, USA",[2011, 1, 20, "PHX"],[80, 5, 12, -2, 71, 0, 70, "17:32"],[830, 48, 130, -64]),
+  mukhamadullin: mk(77,205,"L","2002-01-10","Ufa, RUS",[2020, 1, 20, "NJD"],[50, 5, 7, -3, 22, 0, 49, "17:09"],[85, 7, 15, -16]),
+  emberson: mk(73,202,"R","2000-05-23","Eau Claire, Wisconsin, USA",[2018, 3, 73, "ARI"],[72, 2, 10, -1, 23, 0, 46, "15:31"],[178, 5, 30, -10]),
+  hyman: mk(73,208,"R","1992-06-09","Toronto, Ontario, CAN",[2010, 5, 123, "FLA"],[58, 31, 21, 13, 28, 10, 159, "19:59"],[712, 261, 234, 135]),
+  walman: mk(73,218,"L","1996-02-20","Toronto, Ontario, CAN",[2014, 3, 82, "STL"],[53, 8, 12, -17, 10, 1, 96, "18:45"],[320, 40, 71, -14]),
+  dach: mk(75,215,"L","2003-01-04","Fort Saskatchewan, Alberta, CAN",[2021, 2, 62, "CHI"],[61, 5, 8, -15, 52, 1, 58, "11:29"],[89, 7, 13, -22]),
+  levi: mk(72,187,"L","2001-12-27","Dollard-des-Ormeaux, Quebec, CAN",[2020, 7, 212, "FLA"],null,[42, 20, 17, 2, "3.30", ".893", 0]),
+  jarry: mk(73,201,"L","1995-04-29","Surrey, British Columbia, CAN",[2013, 2, 44, "PIT"],[33, 29, 18, 9, 3, "3.32", ".882", 2],[327, 170, 106, 35, "2.81", ".907", 23]),
+  panarin: mk(72,176,"R","1991-10-30","Korkino, RUS",null,[78, 28, 56, -7, 20, 4, 224, "20:51"],[834, 333, 625, 136]),
+  byfield: mk(77,230,"L","2002-08-19","Newmarket, Ontario, CAN",[2020, 1, 2, "LAK"],[79, 24, 25, -2, 46, 4, 180, "20:01"],[343, 76, 117, 36]),
+  kempe: mk(74,205,"L","1996-09-13","Kramfors, SWE",[2014, 1, 29, "LAK"],[81, 36, 37, 14, 58, 4, 226, "19:18"],[715, 231, 246, 36]),
+  moore: mk(71,195,"L","1995-03-31","Thousand Oaks, California, USA",null,[69, 13, 19, 0, 8, 0, 159, "16:44"],[485, 107, 140, 38]),
+  haula: mk(71,191,"L","1991-03-23","Pori, FIN",[2009, 7, 182, "MIN"],[81, 14, 24, -15, 64, 4, 127, "16:40"],[844, 168, 210, 32]),
+  laferriere: mk(73,205,"R","2001-10-28","Chatham, New Jersey, USA",[2020, 3, 83, "LAK"],[82, 21, 23, 3, 18, 3, 209, "18:19"],[243, 53, 59, 12]),
+  armia: mk(75,215,"R","1993-05-31","Pori, FIN",[2011, 1, 16, "BUF"],[67, 13, 12, 1, 30, 1, 92, "14:04"],[653, 116, 116, -10]),
+  laughton: mk(73,190,"L","1994-05-30","Oakville, Ontario, CAN",[2012, 1, 20, "PHI"],[64, 13, 7, -5, 31, 1, 95, "14:21"],[749, 121, 168, -49]),
+  wright: mk(73,178,"R","2002-11-22","Burnsville, Minnesota, USA",[2022, 6, 169, "LAK"],[23, 0, 4, 0, 4, 0, 32, "11:26"],[24, 0, 4, 0]),
+  lee_a: mk(76,210,"L","2000-07-26","Karlstad, SWE",[2019, 7, 188, "LAK"],[7, 1, 1, -2, 0, 0, 5, "10:17"],[26, 2, 3, -7]),
+  helenius: mk(78,225,"L","2002-11-26","Dallas, Texas, USA",[2021, 2, 59, "LAK"],[53, 5, 4, -6, 50, 0, 38, "7:59"],[103, 9, 7, -5]),
+  perry: mk(75,210,"R","1985-05-16","Peterborough, Ontario, CAN",[2003, 1, 28, "ANA"],[72, 17, 20, 0, 81, 5, 113, "13:41"],[1464, 465, 507, 57]),
+  edmundson: mk(77,220,"L","1993-06-28","Brandon, Manitoba, CAN",[2011, 2, 46, "STL"],[82, 2, 21, 14, 25, 0, 104, "18:29"],[685, 37, 116, 60]),
+  clarke: mk(74,200,"R","2003-02-09","Nepean, Ontario, CAN",[2021, 1, 8, "LAK"],[82, 8, 32, 11, 63, 2, 159, "19:48"],[187, 15, 68, 15]),
+  dumoulin: mk(76,215,"L","1991-09-06","Biddeford, Maine, USA",[2009, 2, 51, "CAR"],[82, 2, 15, -1, 22, 0, 61, "17:45"],[792, 31, 164, 93]),
+  doughty: mk(73,210,"R","1989-12-08","London, Ontario, CAN",[2008, 1, 2, "LAK"],[72, 5, 18, 4, 40, 0, 101, "23:05"],[1280, 165, 545, 71]),
+  anderson: mk(72,195,"L","1999-05-25","Roseville, Minnesota, USA",[2017, 4, 103, "LAK"],[80, 4, 16, 8, 22, 0, 61, "20:34"],[425, 21, 81, 77]),
+  ceci: mk(75,210,"R","1993-12-21","Ottawa, Ontario, CAN",[2012, 1, 15, "OTT"],[82, 1, 8, -10, 16, 0, 59, "17:34"],[953, 53, 191, -8]),
+  turcotte: mk(71,195,"L","2001-02-26","Elk Grove, Illinois, USA",[2019, 1, 5, "LAK"],[62, 3, 11, -8, 21, 0, 67, "10:50"],[164, 13, 31, 2]),
+  zuccarello: mk(68,181,"L","1987-09-01","Oslo, NOR",null,[59, 15, 39, -5, 20, 6, 122, "18:39"],[966, 232, 513, 49]),
+  kuemper: mk(77,215,"L","1990-05-05","Saskatoon, Saskatchewan, CAN",[2009, 6, 161, "MIN"],[50, 50, 19, 14, 15, "2.78", ".891", 3],[490, 228, 161, 68, "2.58", ".912", 39]),
+  forsberg: mk(75,200,"L","1992-11-27","Harnosand, SWE",[2011, 7, 188, "CBJ"],[36, 31, 16, 12, 5, "2.57", ".910", 3],[227, 90, 93, 20, "2.97", ".905", 11]),
+  // Montreal and Washington
+  caufield: mk(68,175,"R","2001-01-02","Mosinee, Wisconsin, USA",[2019, 1, 15, "MTL"],[81, 51, 37, 29, 14, 11, 258, "18:11"],[374, 172, 139, 0]),
+  suzuki: mk(71,207,"R","1999-08-10","London, Ontario, CAN",[2017, 1, 13, "VGK"],[82, 29, 72, 37, 28, 11, 183, "20:49"],[543, 170, 314, -17]),
+  slafkovsky: mk(75,225,"L","2004-03-30","Kosice, SVK",[2022, 1, 1, "MTL"],[82, 30, 43, 9, 52, 15, 180, "18:32"],[288, 73, 114, -20]),
+  kreider: mk(75,232,"L","1991-04-30","Boxford, Massachusetts, USA",[2009, 1, 19, "NYR"],[75, 22, 28, -4, 34, 8, 139, "17:03"],[964, 349, 287, 117]),
+  newhook: mk(71,200,"L","2001-01-28","St. John's, Newfoundland and Labrador, CAN",[2019, 1, 16, "COL"],[42, 13, 12, 9, 10, 2, 61, "14:29"],[344, 71, 82, -10]),
+  anderson_j: mk(75,226,"R","1994-05-07","Burlington, Ontario, CAN",[2012, 4, 95, "CBJ"],[72, 14, 9, -4, 90, 0, 89, "14:01"],[688, 160, 113, -40]),
+  bolduc: mk(72,187,"L","2003-02-24","Trois-Rivieres, Quebec, CAN",[2021, 1, 17, "STL"],[78, 12, 18, -6, 28, 3, 101, "13:38"],[178, 39, 39, 16]),
+  danault: mk(73,200,"L","1993-02-24","Victoriaville, Quebec, CAN",[2011, 1, 26, "CHI"],[75, 6, 11, -3, 26, 0, 91, "15:34"],[792, 131, 281, 80]),
+  texier: mk(73,196,"L","1999-09-13","Saint-Martin-d'Heres, FRA",[2017, 2, 45, "CBJ"],[51, 8, 13, 9, 26, 0, 74, "13:39"],[286, 48, 65, -6]),
+  beck: mk(72,199,"R","2004-02-03","Port Hope, Ontario, CAN",[2022, 2, 33, "MTL"],[15, 1, 0, 4, 6, 0, 11, "9:11"],[28, 1, 1, 1]),
+  evans: mk(72,190,"R","1996-06-02","Toronto, Ontario, CAN",[2014, 7, 207, "MTL"],[68, 12, 12, -8, 28, 0, 75, "15:21"],[418, 52, 100, -15]),
+  dach_k: mk(76,221,"R","2001-01-21","Fort Saskatchewan, Alberta, CAN",[2019, 1, 3, "CHI"],[37, 8, 7, -2, 31, 0, 47, "13:39"],[310, 51, 86, -55]),
+  hutson_l: mk(69,162,"L","2004-02-14","Holland, Michigan, USA",[2022, 2, 62, "MTL"],[82, 12, 66, 36, 34, 2, 124, "23:46"],[172, 19, 133, 33]),
+  dobson: mk(76,200,"R","2000-01-07","Summerside, Prince Edward Island, CAN",[2018, 1, 12, "NYI"],[80, 12, 35, 5, 34, 2, 158, "22:29"],[474, 62, 216, 0]),
+  guhle: mk(75,202,"L","2002-01-18","Edmonton, Alberta, CAN",[2020, 1, 16, "MTL"],[39, 2, 9, 5, 41, 0, 40, "19:28"],[210, 18, 51, -16]),
+  carrier: mk(71,174,"R","1996-10-08","Quebec City, Quebec, CAN",[2015, 4, 115, "NSH"],[73, 7, 15, 2, 34, 0, 56, "19:05"],[372, 21, 90, 34]),
+  engstrom: mk(74,193,"L","2003-11-17","Jarna, SWE",[2022, 3, 92, "MTL"],[15, 0, 1, 2, 8, 0, 11, "13:03"],[15, 0, 1, 2]),
+  xhekaj_a: mk(76,240,"L","2001-01-30","Hamilton, Ontario, CAN",null,[65, 1, 3, -8, 116, 0, 40, "11:25"],[236, 10, 23, -26]),
+  demidov: mk(73,192,"L","2005-12-10","Sergiyev Posad, RUS",[2024, 1, 5, "MTL"],[82, 19, 43, 3, 34, 7, 127, "15:30"],[86, 21, 45, 4]),
+  xhekaj_f: mk(75,195,"L","2004-06-27","Hamilton, Ontario, CAN",[2023, 4, 101, "MTL"],[5, 0, 1, -1, 7, 0, 4, "9:36"],[5, 0, 1, -1]),
+  matheson: mk(74,196,"L","1994-02-27","Pointe-Claire, Quebec, CAN",[2012, 1, 23, "FLA"],[78, 7, 30, 9, 34, 0, 114, "24:10"],[710, 81, 222, -26]),
+  fowler: mk(73,223,"L","2004-11-24","Melbourne, Florida, USA",[2023, 3, 69, "MTL"],[17, 17, 9, 6, 2, "2.43", ".908", 1],[19, 10, 7, 2, "2.33", ".911", 2]),
+  dobes: mk(76,215,"L","2001-05-27","Ostrava, CZE",[2020, 5, 136, "MTL"],[43, 42, 29, 10, 4, "2.78", ".901", 0],[62, 37, 15, 8, "2.85", ".901", 1]),
+  tuch: mk(76,225,"R","1996-05-10","Syracuse, New York, USA",[2014, 1, 18, "MIN"],[79, 33, 33, 24, 57, 7, 195, "19:00"],[621, 203, 248, 81]),
+  strome: mk(76,200,"L","1997-03-07","Mississauga, Ontario, CAN",[2015, 1, 3, "ARI"],[80, 19, 39, 2, 46, 6, 143, "18:02"],[603, 165, 281, -41]),
+  wilson: mk(76,230,"R","1994-03-29","Toronto, Ontario, CAN",[2012, 1, 16, "WSH"],[72, 30, 32, 15, 117, 7, 153, "19:28"],[912, 211, 251, 50]),
+  protas_a: mk(78,250,"L","2001-01-06","Vitebsk, BLR",[2019, 3, 91, "WSH"],[76, 25, 27, 20, 20, 0, 159, "18:14"],[327, 68, 105, 50]),
+  protas_i: mk(78,225,"L","2006-07-18","Vitebsk, BLR",[2024, 3, 75, "WSH"],[4, 1, 3, 1, 2, 1, 7, "15:54"],[4, 1, 3, 1]),
+  ovechkin: mk(75,238,"R","1985-09-17","Moscow, RUS",[2004, 1, 1, "WSH"],[82, 32, 32, -5, 26, 5, 244, "17:27"],[1579, 930, 759, 56]),
+  leonard: mk(73,205,"R","2005-01-21","Northampton, Massachusetts, USA",[2023, 1, 8, "WSH"],[75, 20, 25, 2, 47, 4, 153, "14:25"],[90, 23, 29, 1]),
+  jenner: mk(74,210,"L","1993-06-15","Dorchester, Ontario, CAN",[2011, 2, 37, "CBJ"],[67, 13, 25, 3, 44, 1, 132, "16:05"],[814, 215, 210, -60]),
+  kyrou: mk(73,190,"R","1998-05-05","Toronto, Ontario, CAN",[2016, 2, 35, "STL"],[72, 18, 28, -5, 8, 4, 173, "15:44"],[494, 169, 211, -27]),
+  frank: mk(71,188,"R","1998-02-05","Aurora, Colorado, USA",null,[62, 12, 12, 8, 18, 2, 91, "12:14"],[86, 16, 15, 11]),
+  sourdif: mk(72,195,"R","2002-03-24","Richmond, British Columbia, CAN",[2020, 3, 87, "FLA"],[78, 15, 20, 17, 35, 3, 108, "14:44"],[82, 16, 20, 18]),
+  beauvillier: mk(71,185,"L","1997-06-08","Sorel-Tracy, Quebec, CAN",[2015, 1, 28, "NYI"],[82, 15, 13, 7, 30, 1, 155, "15:48"],[717, 147, 153, -9]),
+  chychrun: mk(75,215,"L","1998-03-31","Boca Raton, Florida, USA",[2016, 1, 16, "ARI"],[80, 26, 34, 20, 62, 8, 221, "23:20"],[626, 123, 203, -32]),
+  liljegren: mk(73,205,"R","1999-04-30","Kristianstad, SWE",[2017, 1, 17, "TOR"],[47, 1, 10, -7, 29, 0, 40, "19:52"],[311, 21, 72, 6]),
+  fehervary: mk(74,215,"L","1999-10-06","Bratislava, SVK",[2018, 2, 46, "WSH"],[81, 5, 22, 15, 39, 0, 73, "19:17"],[382, 27, 75, 27]),
+  hutson_c: mk(72,180,"L","2006-06-28","St. Louis, Missouri, USA",[2024, 2, 43, "WSH"],[14, 3, 7, -3, 8, 1, 22, "17:27"],[17, 4, 8, -2]),
+  desharnais: mk(79,230,"R","1996-05-29","Laval, Quebec, CAN",[2016, 7, 183, "EDM"],[53, 1, 6, 7, 68, 0, 34, "18:11"],[221, 2, 24, 20]),
+  holl: mk(76,194,"R","1992-01-30","Tonka Bay, Minnesota, USA",[2010, 2, 54, "CHI"],[9, 1, 1, 5, 6, 0, 7, "15:40"],[405, 14, 83, 64]),
+  roy: mk(74,220,"R","1995-03-01","Detroit, Michigan, USA",[2015, 7, 194, "LAK"],[79, 2, 17, 18, 12, 0, 94, "20:37"],[519, 29, 120, 103]),
+  dubois: mk(76,220,"L","1998-06-24","Ste-Agathe-des-Monts, Quebec, CAN",[2016, 1, 3, "CBJ"],[29, 5, 14, -4, 19, 3, 42, "16:49"],[631, 171, 260, 31]),
+  lindgren: mk(74,190,"R","1993-12-18","Lakeville, Minnesota, USA",null,[21, 20, 9, 8, 3, "3.52", ".879", 1],[171, 82, 62, 18, "2.86", ".902", 10]),
+  thompson: mk(76,205,"R","1997-02-25","Calgary, Alberta, CAN",null,[58, 58, 31, 21, 6, "2.44", ".912", 4],[209, 121, 61, 23, "2.57", ".911", 10]),
+  // Buffalo
+  krebs: mk(72,191,"L","2001-01-26","Calgary, Alberta, CAN",[2019, 1, 17, "VGK"],[82, 12, 27, 13, 78, 0, 93, "13:46"],[385, 42, 95, -17]),
+  thompson_t: mk(78,220,"R","1997-10-30","Phoenix, Arizona, USA",[2016, 1, 26, "STL"],[81, 40, 41, -6, 35, 6, 272, "19:15"],[536, 220, 193, -57]),
+  doan: mk(74,198,"R","2002-02-01","Scottsdale, Arizona, USA",[2021, 2, 37, "ARI"],[82, 25, 27, -4, 25, 9, 170, "15:52"],[149, 37, 43, 0]),
+  benson: mk(70,178,"L","2005-05-12","Chilliwack, British Columbia, CAN",[2023, 1, 13, "BUF"],[65, 13, 30, 27, 42, 1, 116, "15:53"],[214, 34, 68, 23]),
+  ostlund: mk(71,182,"L","2004-03-11","Stockholm, SWE",[2022, 1, 16, "BUF"],[60, 11, 16, 11, 14, 2, 60, "13:58"],[75, 13, 18, 6]),
+  quinn: mk(73,188,"R","2001-09-19","Ottawa, Ontario, CAN",[2020, 1, 8, "BUF"],[82, 20, 31, 4, 18, 4, 191, "15:39"],[265, 61, 89, -23]),
+  kulich: mk(73,195,"L","2004-04-14","Kadan, CZE",[2022, 1, 28, "BUF"],[12, 3, 2, -4, 4, 0, 20, "16:22"],[75, 18, 11, -9]),
+  mcleod: mk(75,198,"L","1999-09-21","Mississauga, Ontario, CAN",[2018, 2, 40, "EDM"],[81, 14, 40, 25, 16, 0, 90, "17:37"],[386, 67, 117, 43]),
+  helenius_k: mk(71,194,"R","2006-05-11","Ylojarvi, FIN",[2024, 1, 14, "BUF"],[9, 1, 3, 1, 0, 0, 15, "11:55"],[15, 2, 3, -1]),
+  danforth: mk(68,193,"R","1993-03-15","Oshawa, Ontario, CAN",null,[4, 0, 0, -2, 2, 0, 2, "11:42"],[187, 31, 33, -26]),
+  norris: mk(74,196,"L","1999-05-05","Oxford, Michigan, USA",[2017, 1, 19, "SJS"],[44, 13, 21, 11, 28, 2, 69, "15:50"],[287, 104, 89, -21]),
+  malenstyn: mk(75,209,"L","1998-02-04","Delta, British Columbia, CAN",[2016, 5, 145, "WSH"],[81, 7, 7, 0, 38, 0, 72, "11:15"],[262, 19, 29, -16]),
+  samuelsson: mk(76,234,"L","2000-03-14","Philadelphia, Pennsylvania, USA",[2018, 2, 32, "BUF"],[78, 13, 28, 41, 28, 0, 109, "22:50"],[296, 21, 65, 41]),
+  zellweger: mk(70,193,"L","2003-09-10","Calgary, Alberta, CAN",[2021, 2, 34, "ANA"],[76, 7, 15, 4, 34, 1, 119, "16:59"],[170, 18, 36, -1]),
+  power: mk(78,226,"L","2002-11-22","Mississauga, Ontario, CAN",[2021, 1, 1, "BUF"],[81, 8, 21, 9, 16, 0, 120, "21:39"],[328, 28, 117, 18]),
+  metsa: mk(69,201,"R","1998-10-19","Delafield, Wisconsin, USA",null,[43, 2, 4, 16, 8, 0, 24, "10:58"],[44, 2, 4, 15]),
+  gilbert: mk(74,216,"L","1996-10-30","Buffalo, New York, USA",[2015, 3, 91, "CHI"],[8, 0, 1, 0, 2, 0, 2, "12:41"],[120, 3, 19, -17]),
+  crevier: mk(80,236,"R","2001-05-04","Quebec City, Quebec, CAN",[2020, 7, 188, "CHI"],[78, 7, 18, -2, 63, 0, 114, "17:08"],[134, 10, 22, -24]),
+  dahlin: mk(75,206,"L","2000-04-13","Lidkoping, SWE",[2018, 1, 1, "BUF"],[77, 19, 55, 18, 76, 6, 194, "24:11"],[592, 104, 334, -40]),
+  luukkonen: mk(77,223,"L","1999-03-09","Espoo, FIN",[2017, 2, 54, "BUF"],[35, 34, 22, 9, 3, "2.52", ".910", 1],[195, 95, 76, 19, "2.97", ".899", 8]),
+  ellis: mk(73,194,"L","2000-10-05","Whycocomagh, Nova Scotia, CAN",[2019, 3, 93, "STL"],[16, 14, 8, 4, 2, "2.90", ".903", 1],[18, 9, 5, 2, "2.90", ".901", 1])
+};
+/* League cut points, 2025-26 regular season, players with 40+ GP (goalies 20+ GP).
+   Values at the 10th, 25th, 50th, 75th and 90th percentile rank, low to high. n = players in the pool. */
+const LEAGUE = {
+  F: { n: 411, nAll: 615, ppg: [0.18987, 0.28947, 0.46153, 0.71428, 0.92957], toi: [669.07, 763.52, 921.38, 1063.5, 1167.76],
+       hits: [1.06, 2.23, 4.59, 8.94, 14.17], blk: [0.94, 1.35, 1.97, 2.83, 3.89], tk: [0.0, 0.61, 0.86, 1.18, 1.5],
+       sat: [0.422, 0.458, 0.489, 0.521, 0.556], ish: [3.693, 4.764, 5.8, 6.924, 8.113],
+       ht: [70, 72, 73, 74, 76], wt: [180, 187, 199, 209, 220] },
+  D: { n: 201, nAll: 325, ppg: [0.14864, 0.20338, 0.30136, 0.45, 0.71428], toi: [920.23, 1020.52, 1174.76, 1341.35, 1426.3],
+       hits: [0.76, 1.43, 2.81, 4.78, 6.66], blk: [2.6, 3.27, 4.11, 5.24, 6.27], tk: [0.0, 0.53, 0.78, 1.03, 1.33],
+       sat: [0.425, 0.458, 0.486, 0.517, 0.547], ish: [2.277, 2.861, 3.582, 4.481, 5.641],
+       ht: [71, 72, 74, 75, 77], wt: [186, 195, 206, 215, 225] },
+  G: { n: 66, sv: [0.8768, 0.88366, 0.89528, 0.90657, 0.90967], gaa: [2.505, 2.6781, 2.87098, 3.16382, 3.42687] }
+};
+/* 2025-26 advanced rates. [hits/60, blocks/60, takeaways/60, giveaways/60, SAT%, indiv shots/60, DZ start %, EV toi/gp sec, PP toi/gp sec, SH toi/gp sec] */
+const ADV = {
+  tavares:[2.97,0.96,1.04,3.01,48.4,6.29,33.1,927,163,1],
+  ekman:[3.21,2.68,0.59,4.07,47.0,3.82,31.8,1109,110,17],
+  tanev:[0.60,4.55,1.51,2.42,47.8,2.91,37.3,947,3,128],
+  rielly:[1.27,4.14,0.80,3.16,48.8,4.69,25.1,1089,137,42],
+  sissons:[6.76,3.34,0.87,2.18,47.9,5.86,38.9,634,29,88],
+  blueger:[5.71,1.66,0.83,2.69,44.8,4.85,46.3,872,7,112],
+  mccabe:[3.48,6.36,0.90,2.87,44.7,2.80,43.2,1158,18,168],
+  paul:[6.44,1.89,0.77,2.66,51.3,5.87,33.7,724,73,24],
+  nylander:[0.61,1.23,1.47,3.23,48.2,6.42,27.4,992,168,5],
+  raddysh:[2.42,2.49,0.50,2.64,56.7,6.78,31.9,1090,225,47],
+  roslovic:[2.53,1.48,0.71,3.52,52.3,7.71,28.0,877,70,0],
+  matthews:[2.01,3.89,1.44,2.45,46.9,10.39,32.4,1012,166,70],
+  stecher:[1.46,3.85,0.63,3.46,45.6,3.32,36.2,1031,3,118],
+  duhaime:[10.51,3.76,0.46,1.91,45.4,4.42,50.1,594,3,67],
+  macewen:[18.94,3.15,3.15,6.31,75.0,9.57,16.7,380,0,0],
+  groulx:[10.00,1.76,0.00,3.23,34.7,4.73,42.1,745,20,176],
+  marchenko:[2.54,1.66,1.87,3.95,52.9,7.58,23.3,952,181,3],
+  blankenburg:[3.22,3.45,0.99,3.22,53.0,3.71,33.3,843,85,79],
+  cowan:[4.44,1.97,0.80,4.88,45.4,5.68,30.7,789,93,0],
+  lee:[4.25,1.73,0.46,2.80,51.3,7.96,31.2,832,105,1],
+  trocheck:[8.40,2.13,1.17,3.48,49.4,4.07,34.0,929,184,120],
+  schmidt:[2.89,3.52,0.52,2.78,54.7,3.31,30.6,1025,36,120],
+  weegar:[5.64,5.91,1.08,4.19,51.6,5.22,30.5,1127,118,103],
+  schmaltz:[0.85,1.92,1.66,3.48,55.2,6.87,26.5,905,190,88],
+  crouse:[9.46,2.32,0.66,2.27,53.4,7.02,31.7,770,62,163],
+  marino:[1.03,2.52,0.85,3.30,53.8,2.11,33.1,1108,5,99],
+  stenlund:[2.22,3.15,0.67,2.59,46.7,3.66,46.5,678,15,176],
+  keller:[0.30,1.22,0.99,4.02,55.9,7.85,23.2,947,197,1],
+  peeke:[4.22,5.42,0.40,2.37,48.1,3.54,38.1,1019,2,143],
+  sergachev:[1.20,3.95,1.01,3.41,51.9,4.41,33.2,1095,190,172],
+  carcone:[8.77,0.95,0.95,3.10,56.9,8.52,32.3,706,57,0],
+  yamamoto:[4.05,1.72,1.46,2.06,53.0,5.27,32.5,678,25,5],
+  hayton:[2.01,1.71,0.76,2.36,54.0,6.63,36.5,775,121,11],
+  mcbain:[15.65,2.48,0.51,2.94,52.6,6.81,34.8,723,22,87],
+  guenther:[2.88,1.22,0.69,2.96,52.9,9.79,33.2,833,195,16],
+  cooley:[3.46,1.73,1.53,4.23,51.2,5.82,30.2,857,151,32],
+  simashev:[1.98,3.97,0.14,4.25,47.8,3.82,30.5,895,1,11],
+  but:[2.65,2.98,0.66,2.98,53.5,6.76,27.6,667,81,0],
+  // Edmonton and Los Angeles
+  mcdavid:[1.27, 0.95, 1.01, 4.26, 53.9, 7.82, 24.6, 1099, 216, 63],
+  draisaitl:[1.45, 0.64, 1.11, 4.53, 53.2, 5.65, 26.4, 1051, 216, 27],
+  podkolzin:[11.51, 2.47, 0.85, 2.47, 53.4, 6.2, 26.2, 857, 28, 38],
+  hallander:[1.05, 1.75, 0.7, 4.21, 48.6, 8.27, 32.1, 711, 17, 60],
+  dickinson:[5.13, 3.01, 0.78, 2.47, 48.5, 4.84, 48.1, 799, 5, 127],
+  kapanen:[7.52, 1.8, 0.7, 2.5, 47.1, 6.7, 31.0, 800, 16, 60],
+  joseph:[11.28, 3.33, 1.37, 2.45, 48.2, 3.72, 34.5, 671, 2, 46],
+  frederic:[14.17, 1.61, 0.66, 2.57, 47.4, 5.74, 35.1, 655, 7, 0],
+  samanski:[6.39, 3.31, 1.42, 2.36, 49.6, 2.5, 29.6, 604, 1, 28],
+  howard:[1.4, 1.0, 0.4, 3.41, 43.2, 7.62, 28.8, 589, 29, 0],
+  ekholm:[2.3, 4.44, 0.88, 3.58, 55.6, 4.91, 26.0, 1101, 30, 104],
+  bouchard:[0.85, 2.99, 0.97, 3.64, 55.1, 5.69, 25.6, 1155, 218, 108],
+  shea:[1.5, 3.65, 0.95, 2.26, 49.1, 3.25, 34.4, 987, 10, 136],
+  murphy:[3.84, 5.9, 0.72, 2.77, 45.3, 3.52, 39.3, 887, 2, 164],
+  mukhamadullin:[2.45, 4.41, 0.49, 4.27, 44.6, 3.82, 37.7, 941, 4, 84],
+  emberson:[5.74, 5.69, 0.69, 2.84, 46.3, 2.66, 36.9, 854, 1, 77],
+  hyman:[2.89, 0.93, 0.41, 1.39, 52.1, 7.29, 25.4, 980, 217, 2],
+  walman:[0.9, 5.43, 0.84, 3.62, 48.1, 5.76, 29.5, 1024, 42, 59],
+  dach:[18.76, 2.48, 1.19, 2.65, 47.6, 5.02, 32.0, 642, 45, 1],
+  panarin:[0.4, 0.59, 0.92, 3.87, 53.7, 6.35, 26.0, 1048, 202, 0],
+  byfield:[2.5, 1.66, 1.4, 2.8, 53.4, 6.83, 35.1, 954, 132, 116],
+  kempe:[4.87, 1.49, 0.92, 2.57, 52.1, 8.21, 28.7, 942, 184, 33],
+  moore:[2.96, 1.87, 1.29, 2.7, 54.5, 8.11, 34.7, 859, 44, 102],
+  haula:[5.24, 2.26, 0.66, 2.62, 48.3, 5.86, 34.9, 792, 89, 119],
+  laferriere:[10.19, 1.95, 0.87, 3.39, 53.4, 8.37, 34.0, 898, 101, 99],
+  armia:[4.71, 2.54, 1.91, 3.24, 49.3, 5.28, 33.8, 718, 42, 84],
+  laughton:[7.9, 2.74, 0.91, 3.85, 44.4, 6.44, 53.4, 719, 21, 121],
+  wright:[6.16, 4.1, 0.91, 1.59, 50.4, 6.92, 47.5, 683, 0, 2],
+  lee_a:[14.16, 2.5, 2.5, 1.66, 55.9, 4.17, 30.8, 616, 1, 0],
+  helenius:[20.42, 2.41, 0.56, 1.98, 47.1, 5.44, 36.4, 477, 1, 1],
+  perry:[1.82, 1.21, 0.36, 2.98, 49.3, 5.87, 26.1, 680, 140, 0],
+  edmundson:[3.84, 4.39, 0.39, 3.28, 50.8, 4.72, 28.4, 959, 4, 146],
+  clarke:[1.1, 6.83, 0.96, 3.43, 54.3, 5.16, 26.7, 1049, 137, 2],
+  dumoulin:[1.48, 3.66, 0.86, 3.87, 51.2, 2.54, 35.2, 978, 7, 80],
+  doughty:[1.87, 2.74, 0.64, 2.95, 53.6, 3.5, 31.6, 1208, 101, 77],
+  anderson:[4.04, 4.84, 0.51, 1.93, 50.3, 2.5, 36.6, 1093, 4, 137],
+  ceci:[1.54, 4.74, 0.54, 2.54, 50.9, 2.8, 38.7, 935, 1, 118],
+  turcotte:[4.55, 2.95, 1.25, 2.41, 54.5, 6.07, 28.3, 631, 18, 1],
+  zuccarello:[0.87, 1.41, 0.7, 3.38, 49.6, 5.65, 26.2, 901, 217, 1],
+  // Montreal and Washington
+  caufield:[2.03, 0.85, 0.89, 2.28, 52.3, 9.1, 27.4, 888, 202, 0],
+  suzuki:[2.17, 2.17, 1.01, 2.53, 52.1, 5.38, 31.5, 994, 212, 42],
+  slafkovsky:[4.14, 3.07, 0.63, 3.23, 48.4, 5.85, 31.0, 914, 198, 1],
+  kreider:[3.23, 0.93, 0.79, 3.19, 55.5, 5.59, 25.3, 794, 195, 33],
+  newhook:[4.73, 1.67, 0.19, 1.28, 44.9, 5.1, 27.9, 751, 61, 57],
+  anderson_j:[7.66, 2.55, 0.47, 2.49, 46.7, 5.11, 39.7, 702, 5, 135],
+  bolduc:[9.59, 2.42, 1.01, 3.72, 48.6, 5.22, 33.6, 722, 96, 1],
+  danault:[3.23, 2.05, 0.61, 2.46, 49.3, 4.98, 39.8, 779, 36, 119],
+  texier:[5.6, 1.29, 0.51, 1.98, 51.6, 6.53, 34.5, 747, 59, 14],
+  beck:[10.44, 3.48, 0.87, 4.35, 52.1, 4.79, 27.8, 551, 0, 0],
+  evans:[5.11, 2.87, 0.86, 2.75, 46.6, 4.05, 42.9, 746, 2, 173],
+  dach_k:[6.29, 3.56, 1.3, 2.01, 46.7, 6.14, 30.7, 736, 82, 1],
+  hutson_l:[0.95, 4.21, 1.32, 2.86, 52.3, 3.63, 27.3, 1200, 198, 28],
+  dobson:[2.06, 6.27, 1.2, 3.16, 47.0, 5.04, 33.0, 1137, 91, 121],
+  guhle:[6.79, 4.97, 1.65, 2.84, 45.5, 3.64, 39.6, 1065, 1, 102],
+  carrier:[1.5, 6.67, 1.2, 2.15, 47.5, 2.78, 36.8, 963, 1, 181],
+  engstrom:[2.14, 2.45, 0.61, 2.14, 50.0, 3.5, 24.1, 764, 14, 5],
+  xhekaj_a:[14.38, 3.47, 0.16, 2.82, 46.8, 3.27, 26.2, 666, 0, 19],
+  demidov:[1.32, 1.22, 1.03, 3.39, 45.4, 5.21, 26.4, 748, 181, 0],
+  xhekaj_f:[11.25, 5.0, 0.0, 5.0, 36.3, 5.0, 29.5, 576, 0, 0],
+  matheson:[1.87, 4.77, 0.76, 2.99, 45.8, 4.12, 39.8, 1197, 17, 236],
+  tuch:[3.27, 3.59, 1.55, 2.39, 51.3, 7.86, 29.1, 893, 100, 146],
+  strome:[0.45, 2.2, 0.79, 3.11, 49.5, 5.09, 23.6, 892, 187, 4],
+  wilson:[7.66, 2.26, 0.77, 3.59, 53.1, 5.93, 40.0, 871, 171, 126],
+  protas_a:[1.42, 1.81, 1.12, 3.72, 53.1, 6.8, 36.2, 950, 29, 116],
+  protas_i:[0.0, 1.88, 0.94, 0.94, 45.7, 5.78, 47.2, 808, 146, 0],
+  ovechkin:[5.61, 0.67, 0.37, 2.6, 50.8, 8.35, 9.9, 776, 269, 1],
+  leonard:[6.88, 1.38, 0.77, 3.99, 46.7, 7.82, 34.9, 724, 141, 0],
+  jenner:[8.18, 3.67, 0.77, 2.95, 51.4, 7.68, 34.6, 829, 49, 87],
+  kyrou:[0.74, 1.48, 1.16, 2.8, 54.3, 8.65, 23.4, 813, 130, 1],
+  frank:[4.19, 3.55, 0.63, 2.29, 47.3, 6.79, 43.4, 643, 89, 1],
+  sourdif:[5.11, 2.08, 1.09, 2.87, 50.5, 5.12, 41.3, 816, 61, 8],
+  beauvillier:[4.3, 2.22, 0.97, 2.03, 49.1, 7.21, 31.9, 847, 31, 70],
+  chychrun:[1.86, 3.66, 1.28, 3.37, 51.9, 5.87, 28.8, 1196, 181, 24],
+  liljegren:[2.44, 5.78, 0.57, 3.21, 42.5, 2.93, 40.8, 1014, 48, 129],
+  fehervary:[4.22, 6.76, 0.61, 2.07, 47.0, 3.24, 42.4, 984, 2, 170],
+  hutson_c:[3.92, 1.47, 1.96, 3.19, 48.5, 4.72, 29.1, 913, 132, 2],
+  desharnais:[6.41, 5.16, 0.62, 3.11, 48.1, 2.59, 38.5, 895, 2, 194],
+  holl:[2.12, 2.12, 1.7, 1.27, 53.6, 3.11, 31.5, 908, 0, 32],
+  roy:[4.31, 5.38, 0.44, 2.54, 49.6, 3.78, 35.9, 1076, 7, 154],
+  dubois:[2.82, 1.59, 0.61, 3.44, 46.8, 4.57, 39.5, 861, 138, 11],
+  // Buffalo
+  krebs:[10.68, 2.17, 1.16, 3.08, 48.6, 4.76, 35.2, 813, 5, 7],
+  thompson_t:[3.27, 1.84, 1.07, 2.65, 50.4, 9.42, 28.5, 941, 210, 3],
+  doan:[3.59, 1.42, 2.12, 2.95, 51.9, 7.66, 33.5, 785, 167, 1],
+  benson:[2.32, 1.27, 1.45, 2.67, 52.1, 6.31, 33.0, 793, 104, 56],
+  ostlund:[0.35, 2.14, 1.21, 2.5, 51.3, 4.36, 27.6, 755, 80, 3],
+  helenius_k:[5.59, 1.67, 0.55, 3.35, 57.5, 8.55, 20.3, 715, 0, 0],
+  danforth:[3.84, 5.12, 0.0, 3.84, 39.6, 3.46, 33.3, 538, 8, 157],
+  mcleod:[0.67, 1.43, 1.55, 4.07, 50.7, 3.6, 35.9, 816, 95, 146],
+  kulich:[2.74, 3.66, 0.3, 3.05, 49.5, 4.38, 33.5, 882, 98, 1],
+  quinn:[2.43, 1.16, 0.65, 3.36, 49.2, 8.38, 34.7, 797, 134, 8],
+  malenstyn:[18.57, 4.94, 0.79, 2.3, 45.6, 5.37, 41.1, 566, 1, 108],
+  samuelsson:[4.44, 5.18, 0.57, 2.69, 47.6, 4.01, 34.4, 1191, 3, 175],
+  norris:[2.06, 2.32, 0.77, 1.72, 51.2, 5.13, 35.8, 751, 197, 2],
+  power:[0.99, 3.24, 0.75, 2.7, 51.8, 4.48, 34.3, 1131, 56, 112],
+  zellweger:[1.53, 3.95, 0.88, 2.97, 53.3, 5.56, 29.4, 920, 46, 53],
+  metsa:[0.63, 3.94, 0.63, 3.56, 46.7, 2.92, 32.6, 637, 2, 19],
+  gilbert:[5.91, 7.09, 0.0, 3.54, 51.4, 1.21, 31.0, 746, 0, 15],
+  crevier:[5.56, 4.26, 0.67, 2.87, 46.7, 5.54, 43.4, 909, 4, 115],
+  dahlin:[2.15, 2.54, 1.03, 3.7, 52.0, 5.48, 31.4, 1195, 208, 48]
+};
+/* Extra context: ls2 = 2024-25 line (same shape as BIO ls), h = hits [this season, 2025-26, 2024-25], fo = [[2025-26 FO%, draws],[2024-25 FO%, draws]] for centres. */
+const XS = {
+  benson:{ls2:[75,10,18,-2,60,3,120,"14:49"],h:[12,40,35]},
+  blankenburg:{ls2:[60,4,12,-2,24,1,84,"19:33"],h:[5,55,53]},
+  blueger:{ls2:[82,8,18,-7,39,0,94,"14:19"],h:[6,55,104],fo:[[48.1,414],[50.2,1015]]},
+  bobrovsky:{ls2:[54,54,33,19,2,"2.44",".906",5]},
+  cowan:{ls2:null,h:[7,72,null]},
+  crevier:{ls2:[32,3,1,-6,10,0,28,"17:17"],h:[10,124,70]},
+  dahlin:{ls2:[73,17,51,11,54,5,200,"24:14"],h:[8,67,101]},
+  danforth:{ls2:[61,9,12,-6,18,0,94,"14:23"],h:[2,3,126]},
+  doan:{ls2:[51,7,12,-2,8,3,88,"13:31"],h:[13,78,45]},
+  duhaime:{ls2:[82,9,12,3,98,0,83,"13:21"],h:[15,159,165]},
+  ekman:{ls2:[77,4,25,14,52,2,118,"21:04"],h:[8,86,108]},
+  gilbert:{ls2:[29,0,6,-3,50,0,9,"10:29"],h:[1,10,63]},
+  groulx:{ls2:null,h:[9,34,null],fo:[[37.4,155],null]},
+  helenius_k:{ls2:null,h:[6,10,null]},
+  krebs:{ls2:[81,10,18,1,60,1,80,"13:56"],h:[10,201,136]},
+  kulich:{ls2:[62,15,9,-4,18,0,134,"14:48"],h:[7,9,40]},
+  luukkonen:{ls2:[55,55,24,24,5,"3.20",".887",2]},
+  macewen:{ls2:[21,2,1,0,21,0,26,"7:46"],h:[0,6,49]},
+  malenstyn:{ls2:[76,4,0,-16,29,0,67,"10:32"],h:[30,282,191]},
+  marchenko:{ls2:[79,31,43,29,20,2,207,"18:35"],h:[9,61,55]},
+  matthews:{ls2:[67,33,45,11,20,10,261,"20:28"],h:[4,42,45],fo:[[59.7,972],[56.8,1223]]},
+  mccabe:{ls2:[66,2,21,23,40,0,74,"21:31"],h:[9,104,118]},
+  mckenna:{ls2:null,h:[0,null,null]},
+  mcleod:{ls2:[79,20,33,13,16,0,97,"16:50"],h:[1,16,17],fo:[[47.7,1284],[52.3,1204]]},
+  metsa:{ls2:null,h:[1,5,null]},
+  norris:{ls2:[56,21,14,-6,44,6,96,"18:21"],h:[8,24,135],fo:[[49.5,594],[53.8,767]]},
+  nylander:{ls2:[82,45,39,10,26,12,253,"19:31"],h:[1,13,14]},
+  ostlund:{ls2:[8,0,0,-6,2,0,4,"10:32"],h:[1,5,1],fo:[[31.5,273],[36.4,22]]},
+  paul:{ls2:[76,22,19,13,30,2,141,"16:27"],h:[13,75,66]},
+  power:{ls2:[79,7,33,-13,16,1,139,"21:19"],h:[1,29,26]},
+  quinn:{ls2:[74,15,24,-18,18,3,123,"14:52"],h:[8,52,39]},
+  raddysh:{ls2:[73,6,31,9,14,2,108,"17:18"],h:[4,67,38]},
+  rielly:{ls2:[82,7,34,-8,21,1,126,"21:23"],h:[4,35,21]},
+  roslovic:{ls2:[81,22,17,-10,10,1,139,"13:49"],h:[3,46,14]},
+  samuelsson:{ls2:[62,4,10,3,22,0,52,"19:18"],h:[8,132,105]},
+  sissons:{ls2:[72,7,14,-12,22,0,80,"14:22"],h:[21,93,100],fo:[[56.5,614],[54.8,624]]},
+  stecher:{ls2:[66,3,4,-2,27,0,55,"13:52"],h:[6,30,35]},
+  stolarz:{ls2:[34,33,21,8,3,"2.14",".926",4]},
+  tanev:{ls2:[75,3,15,31,24,0,43,"19:45"],h:[1,2,20]},
+  tavares:{ls2:[75,38,36,10,46,12,200,"18:14"],h:[4,74,92],fo:[[57.5,1392],[58.3,1308]]},
+  thompson_t:{ls2:[76,44,28,-2,35,7,242,"18:45"],h:[5,85,70],fo:[[45.5,858],[42.8,704]]},
+  zellweger:{ls2:[62,7,13,1,20,1,130,"18:58"],h:[2,33,37]}
+};
+/* ===== end of game data ===== */
+
+const $ = (s) => document.querySelector(s);
+const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const toi = (s) => { const t = Math.round(s); return Math.floor(t / 60) + ":" + String(t % 60).padStart(2, "0"); };
+const sgn = (n) => (n > 0 ? "+" + n : String(n));
+const nameParts = (full) => { const i = full.indexOf(" "); return [full.slice(0, i), full.slice(i + 1)]; };
+const POS = { C:"Center", L:"Left wing", R:"Right wing", D:"Defense", G:"Goalie" };
+
+function roles(tk, id) {
+  const T = GAME.teams[tk], out = [];
+  T.PP.forEach((u, i) => { if (u.includes(id)) out.push("PP" + (i + 1)); });
+  T.PK.forEach((u, i) => { if (u.includes(id)) out.push("PK" + (i + 1)); });
+  return out;
+}
+
+function tile(tk, id, slot, extra) {
+  const p = P[id], [first, last] = nameParts(p.n);
+  const sub = p.pos === "G" ? p.w + "-" + p.l + "-" + p.otl + " | " + p.sv : p.g + "G " + p.a + "A " + (p.g + p.a) + "P";
+  const badge = extra ? '<span class="badge' + (extra.alt ? " alt" : "") + '">' + esc(extra.text) + "</span>" : "";
+  return '<button class="tile" type="button" data-pid="' + id + '" data-slot="' + esc(slot.key) + '" data-slotlabel="' + esc(slot.label) + '">' +
+    '<span class="t-top"><span class="t-slot">' + esc(slot.short) + '</span><span class="t-num">' + (p.num == null ? "" : p.num) + "</span></span>" +
+    '<span class="t-first">' + esc(first) + "</span><span class=\"t-name\">" + esc(last) + "</span>" +
+    '<span class="t-sub">' + sub + "</span>" + badge + "</button>";
+}
+
+function names(tk, ids) {
+  return ids.map((id) => '<button class="link" type="button" data-pid="' + id + '" data-slot="" data-slotlabel="">' + esc(nameParts(P[id].n)[1]) + "</button>").join("");
+}
+
+function availList(tk, label, list) {
+  if (!list.length) return "";
+  const items = list.map((e) => {
+    const nm = e.id ? P[e.id].n : e.name;
+    const who = e.id ? '<button class="link" type="button" data-pid="' + e.id + '" data-slot="" data-slotlabel="">' + esc(nm) + "</button>" : "<span>" + esc(nm) + "</span>";
+    return "<span>" + who + (e.note ? ' <span class="note">(' + esc(e.note) + ")</span>" : "") + "</span>";
+  }).join("");
+  return '<div class="avail-l"><b>' + label + "</b>" + items + "</div>";
+}
+
+function teamHTML(tk) {
+  const T = GAME.teams[tk];
+  const fwd = T.F.map((line, i) =>
+    '<div class="box"><div class="box-l">Line ' + (i + 1) + '</div><div class="row">' +
+    line.map((id, j) => tile(tk, id, { key: "L" + (i + 1), label: "Line " + (i + 1) + ", " + SLOTS[j], short: SLOTS[j] })).join("") + "</div></div>").join("");
+  const def = T.D.map((pair, i) =>
+    '<div class="box"><div class="box-l">Pair ' + (i + 1) + '</div><div class="row two">' +
+    pair.map((id) => tile(tk, id, { key: "D" + (i + 1), label: "Pair " + (i + 1), short: "D" })).join("") + "</div></div>").join("");
+  const gk = '<div class="box"><div class="box-l">Goalies</div><div class="row two">' +
+    T.G.map((id, i) => tile(tk, id, { key: "G", label: i === 0 ? "Starter" : "Backup", short: "G" }, { text: T.gBadge[id], alt: i > 0 })).join("") + "</div></div>";
+  const st = '<div class="st">' +
+    T.PP.map((u, i) => '<div class="st-b"><div class="box-l">Power play ' + (i + 1) + '</div><div class="names">' + names(tk, u) + "</div></div>").join("") +
+    T.PK.map((u, i) => '<div class="st-b"><div class="box-l">Penalty kill ' + (i + 1) + '</div><div class="names">' + names(tk, u) + "</div></div>").join("") + "</div>";
+  return '<section class="team" data-team="' + tk + '">' +
+    '<div class="band"><div><h2>' + esc(T.city) + '</h2><div class="sub">' + esc(T.name) + '</div></div>' +
+    '<div class="rec">' + esc(T.record) + "<span>" + esc(T.side) + "</span></div></div>" +
+    '<div class="body">' +
+    '<div class="sec"><div class="sec-h">Forwards</div>' + fwd + "</div>" +
+    '<div class="sec"><div class="sec-h">Defense</div>' + def + "</div>" +
+    '<div class="sec"><div class="sec-h">Goalies</div>' + gk + "</div>" +
+    '<div class="sec"><div class="sec-h">Special teams</div>' + st + "</div>" +
+    '<div class="sec avail"><div class="sec-h">Out of the lineup</div>' +
+    availList(tk, "Injured", T.out) + availList(tk, "Scratched", T.scr) + "</div>" +
+    "</div></section>";
+}
+
+/* ===== Matchup comparison (computed from the lineup data, team-agnostic) ===== */
+const mAvg = (a) => { const x = a.filter((v) => v != null && !isNaN(v)); return x.length ? x.reduce((s, v) => s + v, 0) / x.length : null; };
+const tierOf = (d) => (d >= 12 ? 2 : d >= 6 ? 1 : d <= -12 ? -2 : d <= -6 ? -1 : 0);
+const OFF_T = ["significantly weaker offensively", "a step behind offensively", "about even offensively", "moderately better offensively", "significantly better offensively"];
+const DEF_T = ["lacking defensively", "a step behind defensively", "about even defensively", "moderately better defensively", "significantly better defensively"];
+function mBasis(p, b) {
+  if (!b.ls || p.gp >= 25) return { gp: p.gp, g: p.g, a: p.a, min: 5 };
+  return { gp: b.ls[0], g: b.ls[1], a: b.ls[2], min: 10 };
+}
+function groupStats(ids) {
+  const rs = ids.filter((id) => P[id] && P[id].pos !== "G" && BIO[id]).map((id) => {
+    const p = P[id], b = BIO[id], g = grpOf(p), bs = mBasis(p, b), a = b.ls && b.ls[0] >= 10 ? ADV[id] : null; /* skip rate stats built on fewer than 10 GP */
+    const r = { ppg: bs.gp >= bs.min ? (bs.g + bs.a) / bs.gp : null };
+    r.pim = b.ls && b.ls[0] >= 10 ? b.ls[4] / b.ls[0] : null;
+    const fr = foRead(id, p);
+    if (fr) { r.fo = fr.pct; r.foP = pctile(fr.pct, FO_CUTS, false); }
+    r.ppgP = r.ppg == null ? null : pctile(r.ppg, g.ppg, false);
+    if (a) {
+      r.ish = a[5]; r.ishP = pctile(a[5], g.ish, false);
+      r.sat = a[4]; r.satP = pctile(a[4] / 100, g.sat, false);
+      r.blk = a[1]; r.blkP = pctile(a[1], g.blk, false);
+      r.tk = a[2]; r.tkP = pctile(a[2], g.tk, false);
+      r.hits = a[0];
+    }
+    return r;
+  });
+  const col = (k) => mAvg(rs.map((r) => r[k]));
+  return {
+    n: rs.length, pim: col("pim"), fo: col("fo"), ppg: col("ppg"), ish: col("ish"), sat: col("sat"), tk: col("tk"), blk: col("blk"), hits: col("hits"),
+    off: mAvg(rs.map((r) => mAvg([r.ppgP, r.ishP]))), def: mAvg(rs.map((r) => mAvg([r.satP, r.blkP, r.tkP, r.foP])))
+  };
+}
+function verdict(who, what, A, B) {
+  if (A.off == null || B.off == null || A.def == null || B.def == null) return "Not enough data for a read.";
+  const o = tierOf(A.off - B.off), d = tierOf(A.def - B.def);
+  if (!o && !d) return who + " " + what + " is evenly matched, about even offensively and defensively.";
+  const join = o * d < 0 ? " but " : " and ";
+  return who + " " + what + " is " + OFF_T[o + 2] + join + DEF_T[d + 2] + ".";
+}
+const f1 = (v) => (v == null ? "-" : v.toFixed(1)), f2 = (v) => (v == null ? "-" : v.toFixed(2));
+const MU_ROWS = {
+  F: [["Offense rating", "off", f1, 1], ["Defense rating", "def", f1, 1], ["Points per game", "ppg", f2, 1], ["Shots per 60 (5v5)", "ish", f1, 1], ["Shot-attempt share %", "sat", f1, 1], ["Takeaways per 60", "tk", f2, 1], ["Hits per 60", "hits", f1, 1], ["Penalty minutes per game", "pim", f2, 0], ["Faceoff % (centers)", "fo", f1, 1]],
+  D: [["Offense rating", "off", f1, 1], ["Defense rating", "def", f1, 1], ["Points per game", "ppg", f2, 1], ["Shot-attempt share %", "sat", f1, 1], ["Blocks per 60", "blk", f2, 1], ["Takeaways per 60", "tk", f2, 1], ["Hits per 60", "hits", f1, 1], ["Penalty minutes per game", "pim", f2, 0]]
+};
+function muTable(A, B, kind) {
+  const a = GAME.order[0], b = GAME.order[1];
+  const rows = MU_ROWS[kind].map((r) => {
+    const x = A[r[1]], y = B[r[1]];
+    const ax = r[3] === 1 && x != null && y != null && x > y, by = r[3] === 1 && x != null && y != null && y > x;
+    return "<tr><th>" + r[0] + '</th><td class="' + (ax ? "win" : "") + '">' + r[2](x) + '</td><td class="' + (by ? "win" : "") + '">' + r[2](y) + "</td></tr>";
+  }).join("");
+  return '<table class="mu"><thead><tr><th></th><th data-team="' + a + '">' + esc(GAME.teams[a].city) + '</th><th data-team="' + b + '">' + esc(GAME.teams[b].city) + "</th></tr></thead><tbody>" + rows + "</tbody></table>";
+}
+const lastNames = (ids) => ids.map((id) => nameParts(P[id].n)[1]).join(", ");
+function muBlock(title, idsA, idsB, kind) {
+  const a = GAME.order[0], A = groupStats(idsA), B = groupStats(idsB);
+  return '<div class="mu-b"><div class="mu-h">' + title + "</div>" + muTable(A, B, kind) + '<p class="mu-v">' + esc(verdict(GAME.teams[a].name, title.toLowerCase(), A, B)) + "</p></div>";
+}
+function muList(label, kind, groupsA, groupsB) {
+  const a = GAME.order[0], b = GAME.order[1];
+  return '<ul class="mu-l">' + groupsA.map((ids, i) => {
+    const A = groupStats(ids), B = groupStats(groupsB[i]);
+    return "<li><b>" + label + " " + (i + 1) + "</b> <span>" + esc(lastNames(ids)) + " vs " + esc(lastNames(groupsB[i])) + "</span><br>" + esc(verdict(GAME.teams[a].name, label.toLowerCase() + " " + (i + 1), A, B)) + "</li>";
+  }).join("") + "</ul>";
+}
+const edge = (d, th1, th2) => (Math.abs(d) >= th2 ? "clear edge" : Math.abs(d) >= th1 ? "slight edge" : "even");
+function specialTeams(a, b) {
+  const Ta = GAME.teams[a], Tb = GAME.teams[b], fa = Ta.form, fb = Tb.form;
+  const A1 = groupStats(Ta.PP[0]), B1 = groupStats(Tb.PP[0]), A2 = groupStats(Ta.PK[0]), B2 = groupStats(Tb.PK[0]);
+  const rows = [];
+  if (fa && fb && fa.pp && fb.pp) rows.push(["Power play %", fa.pp[0].toFixed(1) + " (" + fa.pp[1] + "/" + fa.pp[2] + ")", fb.pp[0].toFixed(1) + " (" + fb.pp[1] + "/" + fb.pp[2] + ")", fa.pp[0] > fb.pp[0] ? 0 : fb.pp[0] > fa.pp[0] ? 1 : -1]);
+  if (fa && fb && fa.pk && fb.pk) rows.push(["Penalty kill %", fa.pk[0].toFixed(1) + " (" + fa.pk[2] + " times short, " + fa.pk[1] + " GA)", fb.pk[0].toFixed(1) + " (" + fb.pk[2] + " times short, " + fb.pk[1] + " GA)", fa.pk[0] > fb.pk[0] ? 0 : fb.pk[0] > fa.pk[0] ? 1 : -1]);
+  rows.push(["PP1 offense rating", f1(A1.off), f1(B1.off), A1.off > B1.off ? 0 : B1.off > A1.off ? 1 : -1]);
+  rows.push(["PK1 defense rating", f1(A2.def), f1(B2.def), A2.def > B2.def ? 0 : B2.def > A2.def ? 1 : -1]);
+  const tr = rows.map((r) => "<tr><th>" + r[0] + '</th><td class="' + (r[3] === 0 ? "win" : "") + '">' + esc(r[1]) + '</td><td class="' + (r[3] === 1 ? "win" : "") + '">' + esc(r[2]) + "</td></tr>").join("");
+  const lines = [];
+  const nm = (k) => GAME.teams[k].name;
+  if (fa && fb && fa.pp && fb.pp) {
+    const d = fa.pp[0] - fb.pp[0];
+    lines.push("Power play: " + (edge(d, 5, 10) === "even" ? "the two units have converted at a similar rate" : "the " + (d > 0 ? nm(a) : nm(b)) + " have a " + edge(d, 5, 10) + " (" + fa.pp[0].toFixed(1) + "% vs " + fb.pp[0].toFixed(1) + "%)") + ". On paper, the " + nm(a) + " top unit is " + (tierOf(A1.off - B1.off) === 0 ? "about even" : tierOf(A1.off - B1.off) > 0 ? "better" : "weaker") + " offensively than the " + nm(b) + " top unit.");
+  }
+  if (fa && fb && fa.pk && fb.pk) {
+    const d = fa.pk[0] - fb.pk[0];
+    lines.push("Penalty kill: " + (edge(d, 5, 10) === "even" ? "both have killed at a similar rate" : "the " + (d > 0 ? nm(a) : nm(b)) + " have a " + edge(d, 5, 10) + " (" + fa.pk[0].toFixed(1) + "% vs " + fb.pk[0].toFixed(1) + "%)") + ". The " + nm(a) + " first PK unit rates " + (tierOf(A2.def - B2.def) === 0 ? "about even" : tierOf(A2.def - B2.def) > 0 ? "better" : "weaker") + " defensively on paper.");
+  }
+  lines.push("Special-teams percentages are a small sample this early in the season.");
+  return '<div class="mu-b"><div class="mu-h">Special teams</div><table class="mu"><thead><tr><th></th><th data-team="' + a + '">' + esc(Ta.city) + '</th><th data-team="' + b + '">' + esc(Tb.city) + "</th></tr></thead><tbody>" + tr + "</tbody></table>" +
+    lines.map((l) => '<p class="mu-v">' + esc(l) + "</p>").join("") + "</div>";
+}
+function formBlock(a, b) {
+  const one = (k) => {
+    const T = GAME.teams[k], f = T.form; if (!f) return null;
+    const last = f.last.slice(-5), pts = last.reduce((s, g) => s + (g[2] === "W" ? 2 : g[2] === "OTL" ? 1 : 0), 0);
+    const gd = (f.gf - f.ga) / f.gp;
+    const run = pts >= 8 ? "hot" : pts >= 6 ? "solid" : pts >= 4 ? "treading water" : pts >= 2 ? "struggling" : "cold";
+    const flavor = gd >= 0.75 ? ", scoring freely" : gd <= -0.75 ? ", leaking goals" : "";
+    const sk = f.streak[0] === "W" ? "won " + (f.streak[1] > 1 ? "the last " + f.streak[1] : "last game") : f.streak[0] === "L" ? "lost " + (f.streak[1] > 1 ? "the last " + f.streak[1] : "last game") : "lost last game in OT or a shootout";
+    return { T, f, last, pts, gd, run: run + flavor, sk };
+  };
+  const A = one(a), B = one(b); if (!A || !B) return "";
+  const chips = (X) => '<div class="chips">' + X.last.map((g) => '<span class="chip ' + g[2].toLowerCase() + '" title="' + esc(g[0] + " " + g[1] + " " + g[3]) + '">' + g[2] + "<small>" + esc(g[1]) + "</small></span>").join("") + "</div>";
+  const card = (k, X) => '<div class="mu-f" data-team="' + k + '"><div class="mu-fh">' + esc(X.T.city) + "</div><div class=\"mu-fs\">" + esc(X.T.record) + " | goals " + X.f.gf + "-" + X.f.ga + " (" + (X.gd >= 0 ? "+" : "") + X.gd.toFixed(2) + " per game)</div>" +
+    chips(X) + '<div class="mu-fn">Last 5: ' + X.pts + " of 10 points. " + esc(X.run.charAt(0).toUpperCase() + X.run.slice(1)) + ". Has " + X.sk + ".</div></div>";
+  const better = Math.abs(A.gd - B.gd) < 0.4 ? "Both teams have the same underlying record so far" : (A.gd > B.gd ? A.T.name : B.T.name) + " have the better goal differential so far";
+  const txt = A.T.name + " are " + A.run + " (" + A.pts + " of 10 points in the last 5); " + B.T.name + " are " + B.run + " (" + B.pts + " of 10). " + better + ". Small sample: " + A.f.gp + " games each.";
+  return '<div class="mu-sub"><div class="mu-h2">Current run</div><div class="mu-ff">' + card(a, A) + card(b, B) + '</div><p class="mu-v">' + esc(txt) + "</p></div>";
+}
+/* Centres head to head: faceoffs and production for each line's center. */
+function centresBlock(a, b) {
+  const Ta = GAME.teams[a], Tb = GAME.teams[b];
+  const info = (id) => {
+    const p = P[id], bi = BIO[id], bs = mBasis(p, bi), fr = foRead(id, p);
+    return { id: id, nm: nameParts(p.n)[1], ppg: bs.gp >= bs.min ? (bs.g + bs.a) / bs.gp : null, fr: fr, pim: bi.ls && bi.ls[0] >= 10 ? bi.ls[4] / bi.ls[0] : null };
+  };
+  const desc = (c) => c.nm + " (" + (c.fr ? c.fr.pct.toFixed(1) + "% on " + c.fr.n.toLocaleString("en-US") + " draws" : "no faceoff sample") + (c.ppg != null ? ", " + c.ppg.toFixed(2) + " pts/GP" : "") + ")";
+  const items = [0, 1, 2, 3].map((i) => {
+    const A = info(Ta.F[i][1]), B = info(Tb.F[i][1]);
+    let fl = "Faceoffs: not enough data for a read.";
+    if (A.fr && B.fr) {
+      const d = A.fr.pct - B.fr.pct;
+      fl = "Faceoffs: " + (Math.abs(d) < 1.5 ? "about even" : "the " + (d > 0 ? Ta.name : Tb.name) + " have a " + (Math.abs(d) >= 3 ? "clear" : "slight") + " edge") + ".";
+    }
+    let pl = "";
+    if (A.ppg != null && B.ppg != null) {
+      const d = A.ppg - B.ppg;
+      pl = " Production: " + (Math.abs(d) < 0.1 ? "about even" : "the " + (d > 0 ? Ta.name : Tb.name) + " center is " + (Math.abs(d) >= 0.2 ? "clearly" : "slightly") + " ahead") + ".";
+    }
+    return "<li><b>Line " + (i + 1) + " center</b> <span>" + esc(desc(A)) + " vs " + esc(desc(B)) + "</span><br>" + esc(fl + pl) + "</li>";
+  }).join("");
+  const wavg = (T) => { let w = 0, n = 0; T.F.forEach((l) => { const f = foRead(l[1], P[l[1]]); if (f) { w += f.pct * f.n; n += f.n; } }); return n ? w / n : null; };
+  const wa = wavg(Ta), wb = wavg(Tb);
+  const tot = wa != null && wb != null ? "All four centers combined, weighted by draws taken: " + Ta.name + " " + wa.toFixed(1) + "% vs " + Tb.name + " " + wb.toFixed(1) + "%." : "";
+  return '<div class="mu-b"><div class="mu-h">Centers: faceoffs and production</div><ul class="mu-l">' + items + "</ul>" +
+    (tot ? '<p class="mu-v">' + esc(tot) + "</p>" : "") +
+    '<div class="m-foot">Faceoff % is from last season (the season before if there were fewer than 200 draws). League average is about 50%. Ice time and zone starts decide how much a faceoff edge is worth.</div></div>';
+}
+
+/* Expected goals (MoneyPuck team model), from GAME.teams[k].form.xg = { gp, all: [xGF, xGA, GF, GA], ev: [...] } */
+function xgBlock(a, b) {
+  const Ta = GAME.teams[a], Tb = GAME.teams[b], xa = Ta.form && Ta.form.xg, xb = Tb.form && Tb.form.xg;
+  if (!xa || !xb) return "";
+  const share = (f) => (100 * f[0]) / (f[0] + f[1]);
+  const pg = (v, g) => (v / g).toFixed(2);
+  const sect = (label, k) => {
+    const A = xa[k], B = xb[k], ga = xa.gp, gb = xb.gp;
+    const row = (name, va, vb, hi, fmt) => {
+      const aw = hi === 1 ? va > vb : hi === -1 ? va < vb : false, bw = hi === 1 ? vb > va : hi === -1 ? vb < va : false;
+      return "<tr><th>" + name + '</th><td class="' + (aw ? "win" : "") + '">' + fmt(va) + '</td><td class="' + (bw ? "win" : "") + '">' + fmt(vb) + "</td></tr>";
+    };
+    const n2 = (v) => v.toFixed(2), n1 = (v) => v.toFixed(1);
+    return '<tr><th colspan="3" style="text-align:left;color:inherit;font-weight:700;padding-top:10px">' + label + "</th></tr>" +
+      row("Expected goals for per game", A[0] / ga, B[0] / gb, 1, n2) + row("Expected goals against per game", A[1] / ga, B[1] / gb, -1, n2) +
+      row("Expected goals share %", share(A), share(B), 1, n1) +
+      row("Goals for per game", A[2] / ga, B[2] / gb, 1, n2) + row("Goals against per game", A[3] / ga, B[3] / gb, -1, n2);
+  };
+  const table = '<table class="mu"><thead><tr><th></th><th data-team="' + a + '">' + esc(Ta.city) + '</th><th data-team="' + b + '">' + esc(Tb.city) + "</th></tr></thead><tbody>" + sect("All situations", "all") + sect("5 on 5", "ev") + "</tbody></table>";
+  const lines = [];
+  const d5 = share(xa.ev) - share(xb.ev);
+  lines.push(Math.abs(d5) < 2 ? "At 5 on 5 the two teams have had similar shares of the chances (" + share(xa.ev).toFixed(1) + "% vs " + share(xb.ev).toFixed(1) + "% expected goals share)." :
+    "At 5 on 5 the " + (d5 > 0 ? Ta.name : Tb.name) + " have controlled play more, with a " + (Math.abs(d5) >= 5 ? "clear" : "slight") + " edge in expected goals share (" + share(xa.ev).toFixed(1) + "% vs " + share(xb.ev).toFixed(1) + "%).");
+  [[a, xa], [b, xb]].forEach((e) => {
+    const T = GAME.teams[e[0]], f = e[1].all;
+    const up = f[2] - f[0], dn = f[1] - f[3], net = up + dn;
+    lines.push(Math.abs(net) < 3 ? "The " + T.name + " results are roughly in line with their chances." :
+      "The " + T.name + " are " + (net > 0 ? "outperforming" : "underperforming") + " their chances by about " + Math.abs(net).toFixed(1) + " goals (" + (up >= 0 ? "scoring " + up.toFixed(1) + " above" : "scoring " + Math.abs(up).toFixed(1) + " below") + " expected, allowing " + (dn >= 0 ? dn.toFixed(1) + " fewer" : Math.abs(dn).toFixed(1) + " more") + " than expected), which tends to even out over time.");
+  });
+  const ea = (xa.all[0] / xa.gp + xb.all[1] / xb.gp) / 2, eb = (xb.all[0] / xb.gp + xa.all[1] / xa.gp) / 2;
+  lines.push("Rough expectation for tonight, blending each team's expected goals for with the other's against: " + Ta.name + " " + ea.toFixed(2) + ", " + Tb.name + " " + eb.toFixed(2) + ". Small sample: " + xa.gp + " games each.");
+  return '<div class="mu-sub"><div class="mu-h2">Expected goals</div>' + table + lines.map((l) => '<p class="mu-v">' + esc(l) + "</p>").join("") +
+    '<div class="m-foot">Expected goals (xG) come from the MoneyPuck team model through each team\'s last completed game. xG weighs shots by quality and location. Goal totals follow MoneyPuck\'s count and can differ by one from the NHL record (shootout goals). Line and pair level xG is not shown.</div></div>';
+}
+const foAvg = (T) => { let w = 0, n = 0; T.F.forEach((l) => { const f = foRead(l[1], P[l[1]]); if (f) { w += f.pct * f.n; n += f.n; } }); return n ? w / n : null; };
+function formChances(a, b) {
+  const r = formBlock(a, b), x = xgBlock(a, b);
+  if (!r && !x) return "";
+  return '<div class="mu-b"><div class="mu-h">Form and chances</div><div class="mu-split">' + r + x + "</div></div>";
+}
+/* Auto-written summary of the biggest reads, placed at the top of the Matchup tab. */
+function bottomLine(a, b, groups) {
+  const Ta = GAME.teams[a], Tb = GAME.teams[b], fa = Ta.form, fb = Tb.form, rows = [];
+  const lead = (d, th) => (Math.abs(d) < th ? null : d > 0 ? Ta.name : Tb.name);
+  const pts = (f) => f.last.slice(-5).reduce((s, g) => s + (g[2] === "W" ? 2 : g[2] === "OTL" ? 1 : 0), 0);
+  if (fa && fb && fa.last && fb.last) rows.push(["Recent form", Ta.name + " " + pts(fa) + " of 10 points in the last 5, " + Tb.name + " " + pts(fb) + " of 10."]);
+  const xa = fa && fa.xg, xb = fb && fb.xg;
+  if (xa && xb) {
+    const sh = (f) => (100 * f[0]) / (f[0] + f[1]), sa = sh(xa.ev), sb = sh(xb.ev), w = lead(sa - sb, 2);
+    rows.push(["Chances at 5v5", (w ? w + " have had more of the chances" : "Even") + " (expected goals share: " + Ta.name + " " + sa.toFixed(1) + "%, " + Tb.name + " " + sb.toFixed(1) + "%)."]);
+    const net = (f) => f.all[2] - f.all[0] + (f.all[1] - f.all[3]);
+    const na = net(xa), nb = net(xb), bits = [];
+    if (Math.abs(na) >= 3) bits.push(Ta.name + " " + (na > 0 ? "ahead of" : "behind") + " their chances by " + Math.abs(na).toFixed(1) + " goals");
+    if (Math.abs(nb) >= 3) bits.push(Tb.name + " " + (nb > 0 ? "ahead of" : "behind") + " their chances by " + Math.abs(nb).toFixed(1) + " goals");
+    if (bits.length) rows.push(["Results vs chances", bits.join("; ") + ". That tends to even out."]);
+  }
+  if (fa && fb && fa.pp && fb.pp && fa.pk && fb.pk) {
+    const pp = lead(fa.pp[0] - fb.pp[0], 5), pk = lead(fa.pk[0] - fb.pk[0], 5);
+    rows.push(["Special teams", "Power play: " + (pp ? pp + " (" + fa.pp[0].toFixed(1) + "% vs " + fb.pp[0].toFixed(1) + "%, " + Ta.city + " first)" : "about even") + ". Penalty kill: " + (pk ? pk + " (" + fa.pk[0].toFixed(1) + "% vs " + fb.pk[0].toFixed(1) + "%)" : "about even") + "."]);
+  }
+  const fo1 = foAvg(Ta), fo2 = foAvg(Tb);
+  if (fo1 != null && fo2 != null) { const w = lead(fo1 - fo2, 1.5); rows.push(["Faceoffs", (w ? w + " have the edge" : "About even") + " across the four centers (" + Ta.name + " " + fo1.toFixed(1) + "%, " + Tb.name + " " + fo2.toFixed(1) + "%)."]); }
+  rows.push(["Top six", verdict(Ta.name, "top six", groups.top[0], groups.top[1])]);
+  rows.push(["Bottom six", verdict(Ta.name, "bottom six", groups.bot[0], groups.bot[1])]);
+  rows.push(["Defense", verdict(Ta.name, "defense corps", groups.d[0], groups.d[1])]);
+  return '<div class="mu-b"><div class="mu-h">Bottom line</div><ul class="mu-bl-l">' +
+    rows.map((r) => "<li><b>" + esc(r[0]) + "</b><span>" + esc(r[1]) + "</span></li>").join("") +
+    '</ul><div class="m-foot">Written automatically from the numbers below. Small samples this early in the season.</div></div>';
+}
+function matchupHTML() {
+  const a = GAME.order[0], b = GAME.order[1], Ta = GAME.teams[a], Tb = GAME.teams[b];
+  const top = (T) => T.F[0].concat(T.F[1]), bot = (T) => T.F[2].concat(T.F[3]), dAll = (T) => [].concat.apply([], T.D);
+  const groups = { top: [groupStats(top(Ta)), groupStats(top(Tb))], bot: [groupStats(bot(Ta)), groupStats(bot(Tb))], d: [groupStats(dAll(Ta)), groupStats(dAll(Tb))] };
+  const jump = [["mu-form", "Form and chances"], ["mu-st", "Special teams"], ["mu-c", "Centers"], ["mu-f", "Forwards"], ["mu-d", "Defense"]];
+  return '<h2 class="mu-t">Matchup</h2><div class="mu-n">Ratings are average league percentiles for the players in each group, from last season (current season once a skater has 25 GP). Offense = points per game and shot rate. Defense = shot-attempt share, blocks and takeaways (plus faceoff % for centers). Gaps of 6+ points are called out, 12+ is significant. Derived from stats, not scouting.</div>' +
+    bottomLine(a, b, groups) +
+    '<nav class="mu-jump" aria-label="Matchup sections">' + jump.map((j) => '<button type="button" data-jump="' + j[0] + '">' + j[1] + "</button>").join("") + "</nav>" +
+    '<div class="mu-sec" id="mu-form">' + formChances(a, b) + "</div>" +
+    '<div class="mu-g"><div class="mu-sec" id="mu-st">' + specialTeams(a, b) + '</div><div class="mu-sec" id="mu-c">' + centresBlock(a, b) + "</div></div>" +
+    '<div class="mu-sec" id="mu-f"><div class="mu-g">' + muBlock("Top six", top(Ta), top(Tb), "F") + muBlock("Bottom six", bot(Ta), bot(Tb), "F") + "</div>" +
+    '<div class="mu-b"><div class="mu-h">Line by line</div>' + muList("Line", "F", Ta.F, Tb.F) + "</div></div>" +
+    '<div class="mu-sec" id="mu-d"><div class="mu-g">' + muBlock("Defense corps", dAll(Ta), dAll(Tb), "D") + '<div class="mu-b"><div class="mu-h">Pair by pair</div>' + muList("Pair", "D", Ta.D, Tb.D) + "</div></div></div>";
+}
+
+/* ===== Injuries tab: complete list with latest prognosis (GAME.teams[k].inj) ===== */
+function injCount() { return GAME.order.reduce((n, k) => n + (GAME.teams[k].inj || []).filter((e) => e.tonight === "Out").length, 0); }
+function injuriesHTML() {
+  const card = (k) => {
+    const T = GAME.teams[k], list = T.inj || [];
+    const rows = list.map((e) => {
+      const nm = e.id && P[e.id] ? '<button class="link" type="button" data-pid="' + e.id + '" data-slot="" data-slotlabel="">' + esc(P[e.id].n) + "</button>" : "<span>" + esc(e.name) + "</span>";
+      const cls = e.tonight === "Out" ? (e.status === "Day-to-day" ? "dtd" : "out") : "nr";
+      return '<div class="inj-r"><div class="inj-n">' + nm + '<span class="pos">' + esc(e.pos) + '</span><span class="pill ' + cls + '">' + esc(e.status) + '</span><span class="pill ' + (e.tonight === "Out" ? "out" : "nr") + '">Tonight: ' + esc(e.tonight) + "</span></div>" +
+        '<div class="inj-i">' + esc(e.injury) + '</div><div class="inj-p">' + esc(e.prog) + '</div><div class="inj-u">Last update: ' + esc(e.upd) + "</div></div>";
+    }).join("") || '<div class="inj-r"><div class="inj-p">No injuries reported.</div></div>';
+    return '<div class="inj-b" data-team="' + k + '"><div class="inj-bh"><span>' + esc(T.city) + "</span><small>" + list.length + " listed</small></div>" + rows + "</div>";
+  };
+  return '<h2 class="inj-t">Injuries</h2><div class="mu-n">Complete injury lists for both teams. Return dates are tracker estimates (ESPN, CBS, PuckPedia) and team or coach comments, not guarantees. Players on the injured non-roster list are minor-league or depth players.</div><div class="inj-g">' + GAME.order.map(card).join("") + "</div>";
+}
+
+function render() {
+  document.title = GAME.title + " Lineup Card";
+  let tcss = $("#tabcss"); if (!tcss) { tcss = document.createElement("style"); tcss.id = "tabcss"; document.head.appendChild(tcss); }
+  tcss.textContent = "@media (max-width:899px){" + GAME.order.map((k) => '#view[data-active="' + k + '"] .team:not([data-team="' + k + '"]){display:none}').join("") + "}";
+  $("#eyebrow").textContent = GAME.eyebrow;
+  $("#title").textContent = GAME.title;
+  $("#meta").textContent = GAME.when + " | " + GAME.where + " | " + GAME.tv;
+  const narrow = typeof window !== "undefined" && window.matchMedia && window.matchMedia("(max-width:899px)").matches;
+  const start = narrow ? GAME.order[0] : "lineups";
+  $("#tabs").innerHTML = '<button class="tab tab-lineups" type="button" data-tab="lineups" aria-pressed="' + (start === "lineups") + '"><span>Lineups</span><small>Both teams</small></button>' +
+    GAME.order.map((tk) => {
+      const T = GAME.teams[tk];
+      return '<button class="tab tab-team" type="button" data-tab="' + tk + '" aria-pressed="' + (tk === start) + '"><span>' + esc(T.city) + "</span><small>" + esc(T.record) + "</small></button>";
+    }).join("") +
+    '<button class="tab" type="button" data-tab="matchup" aria-pressed="false"><span>Matchup</span><small>Compare</small></button>' +
+    '<button class="tab" type="button" data-tab="injuries" aria-pressed="false"><span>Injuries</span><small>' + injCount() + " out</small></button>";
+  $("#view").dataset.active = start;
+  $("#matchup").hidden = true;
+  $("#injuries").hidden = true;
+  $("#injuries").innerHTML = injuriesHTML();
+  $("#lineups").innerHTML = GAME.order.map(teamHTML).join("");
+  $("#matchup").innerHTML = matchupHTML();
+  $("#foot").innerHTML = "<div>" + esc(GAME.asOf) + "</div><div>" + esc(GAME.statsNote) + "</div><div>Sources: " +
+    GAME.sources.map((s) => '<a href="' + s[1] + '" target="_blank" rel="noopener">' + esc(s[0]) + "</a>").join(", ") + "</div>";
+}
+
+let lastFocus = null;
+function statusFor(tk, id) {
+  const T = GAME.teams[tk];
+  const o = T.out.find((e) => e.id === id); if (o) return "Out: " + (o.note || "unavailable");
+  if (T.scr.some((e) => e.id === id)) return "Healthy scratch tonight";
+  return "";
+}
+function stat(v, l) { return '<div class="stat"><b>' + v + "</b><span>" + l + "</span></div>"; }
+
+const ageOn = (dob, ref) => {
+  const d = new Date(dob + "T00:00:00Z"), r = new Date(ref + "T00:00:00Z");
+  let a = r.getUTCFullYear() - d.getUTCFullYear();
+  const m = r.getUTCMonth() - d.getUTCMonth();
+  if (m < 0 || (m === 0 && r.getUTCDate() < d.getUTCDate())) a--;
+  return a;
+};
+const ftIn = (n) => Math.floor(n / 12) + "'" + (n % 12) + '"';
+const secs = (t) => { if (!t) return null; const x = t.split(":").map(Number); return x[0] * 60 + x[1]; };
+const ord = (n) => { const v = n % 100; return n + (["th", "st", "nd", "rd"][(v - 20) % 10] || ["th", "st", "nd", "rd"][v] || "th"); };
+
+/* Approximate percentile (0-100, higher is better) from cut points at the 10/25/50/75/90th rank. */
+function pctile(v, cuts, lowerBetter) {
+  const ps = [10, 25, 50, 75, 90];
+  let p;
+  if (v <= cuts[0]) p = ps[0] - (cuts[0] - v) * ((ps[1] - ps[0]) / ((cuts[1] - cuts[0]) || 1e9));
+  else if (v >= cuts[4]) p = ps[4] + (v - cuts[4]) * ((ps[4] - ps[3]) / ((cuts[4] - cuts[3]) || 1e9));
+  else {
+    let i = 0;
+    while (v > cuts[i + 1]) i++;
+    p = ps[i] + ((v - cuts[i]) / ((cuts[i + 1] - cuts[i]) || 1e9)) * (ps[i + 1] - ps[i]);
+  }
+  p = Math.max(1, Math.min(99, p));
+  return Math.round(lowerBetter ? 100 - p : p);
+}
+
+function bioStrip(p, b) {
+  const draft = b.d ? b.d[0] + " round " + b.d[1] + ", #" + b.d[2] + " overall by " + b.d[3] : "Undrafted";
+  const cell = (l, v, wide) => '<div' + (wide ? ' class="wide"' : "") + "><span>" + l + "</span><b>" + esc(v) + "</b></div>";
+  return '<div class="bio">' +
+    cell("Age", ageOn(b.dob, GAME.date)) + cell("Height", ftIn(b.ht)) + cell("Weight", b.wt + " lb") +
+    cell(p.pos === "G" ? "Catches" : "Shoots", b.h) +
+    cell("Born", b.b, true) + cell("Drafted", draft, true) + "</div>";
+}
+
+function seasonTable(p, b, id) {
+  const dash = "-", x = XS[id] || {};
+  const hv = (i) => (x.h && x.h[i] != null ? x.h[i] : dash);
+  let head, rows;
+  if (p.pos === "G") {
+    head = ["GP", "W-L-OT", "GAA", "SV%", "SO"];
+    const c = b.c;
+    const gl = (q) => (q ? [q[0], q[2] + "-" + q[3] + "-" + q[4], q[5], q[6], q[7]] : [dash, dash, dash, dash, dash]);
+    rows = [
+      [seasonLbl(0), p.gp, p.w + "-" + p.l + "-" + p.otl, p.gaa, p.sv, p.so],
+      [seasonLbl(-1)].concat(gl(b.ls)),
+      [seasonLbl(-2)].concat(gl(x.ls2)),
+      ["Career", c[0], c[1] + "-" + c[2] + "-" + c[3], c[4], c[5], c[6]]
+    ];
+  } else {
+    const isC = p.pos === "C", c = b.c;
+    head = ["GP", "G", "A", "P", "+/-", "PIM", "Hits"].concat(isC ? ["FO%"] : []);
+    const line = (q) => (q ? [q[0], q[1], q[2], q[1] + q[2], sgn(q[3]), q[4]] : [dash, dash, dash, dash, dash, dash]);
+    const foc = (f) => (f ? f[0].toFixed(1) : dash);
+    rows = [
+      [seasonLbl(0), p.gp, p.g, p.a, p.g + p.a, sgn(p.pm), p.pim, hv(0)].concat(isC ? [p.fo.toFixed(1)] : []),
+      [seasonLbl(-1)].concat(line(b.ls), [hv(1)], isC ? [foc(x.fo && x.fo[0])] : []),
+      [seasonLbl(-2)].concat(line(x.ls2), [hv(2)], isC ? [foc(x.fo && x.fo[1])] : []),
+      ["Career", c[0], c[1], c[2], c[1] + c[2], sgn(c[3]), dash, dash].concat(isC ? [dash] : [])
+    ];
+  }
+  return '<div class="tbl-w"><table class="tbl"><thead><tr><th></th>' + head.map((h) => "<th>" + h + "</th>").join("") + "</tr></thead><tbody>" +
+    rows.map((r) => "<tr>" + r.map((v, i) => (i === 0 ? '<th scope="row">' + v + "</th>" : "<td>" + v + "</td>")).join("") + "</tr>").join("") +
+    "</tbody></table></div>";
+}
+/* Faceoff read for centres: last season if 200+ draws, else the season before if 200+ draws. League average is about 50%. */
+const FO_CUTS = [46, 48, 50, 52, 54];
+function foRead(id, p) {
+  const x = XS[id];
+  if (!x || p.pos !== "C" || !x.fo) return null;
+  const c = [[x.fo[0], seasonLbl(-1)], [x.fo[1], seasonLbl(-2)]];
+  for (let i = 0; i < c.length; i++) if (c[i][0] && c[i][0][1] >= 200) return { pct: c[i][0][0], n: c[i][0][1], yr: c[i][1] };
+  return null;
+}
+const foWord = (v) => (v >= 56 ? "elite" : v >= 54 ? "strong" : v >= 52 ? "good" : v >= 48 ? "around league average" : v >= 46 ? "below average" : "weak");
+const pimWord = (v) => (v >= 1 ? "high" : v >= 0.65 ? "above average" : v <= 0.25 ? "very low" : "about average");
+function seasonNote(p, id) {
+  const x = XS[id] || {};
+  const bits = ["PIM = penalty minutes (includes fighting majors)."];
+  if (p.pos === "C" && x.fo) {
+    const d = [];
+    if (x.fo[0]) d.push(x.fo[0][1].toLocaleString("en-US") + " draws in " + seasonLbl(-1));
+    if (x.fo[1]) d.push(x.fo[1][1].toLocaleString("en-US") + " in " + seasonLbl(-2));
+    if (d.length) bits.push("Faceoff sample: " + d.join(", ") + ". Current season FO% is on a small sample.");
+  }
+  return '<div class="m-foot">' + esc(bits.join(" ")) + "</div>";
+}
+
+function seasonLbl(off) {
+  const d = new Date(GAME.date + "T00:00:00Z");
+  let y = d.getUTCFullYear(); if (d.getUTCMonth() < 8) y--;
+  y += off;
+  return y + "-" + String((y + 1) % 100).padStart(2, "0");
+}
+/* Production basis for type and percentiles: current season once a skater has 25 GP, otherwise last season. */
+function basisOf(p, b) {
+  const l = b.ls;
+  if (p.pos !== "G" && p.gp >= 25) return { gp: p.gp, g: p.g, a: p.a, toi: p.toi, yr: seasonLbl(0), cur: true };
+  return { gp: l[0], g: l[1], a: l[2], toi: secs(l[7]), yr: seasonLbl(-1), cur: false };
+}
+function grpOf(p) { return p.pos === "D" ? LEAGUE.D : LEAGUE.F; }
+
+/* Size read: height and weight against position peers (forwards or defensemen with 40+ GP in 2025-26). */
+function sizeRead(p, b) {
+  const base = ftIn(b.ht) + ", " + b.wt + " lb";
+  if (p.pos === "G") {
+    const lab = b.ht >= 76 ? "Big goalie" : b.ht >= 74 ? "Average-size goalie" : "Smaller goalie";
+    return { label: lab, line: lab + ": " + base + "." };
+  }
+  const g = grpOf(p), who = p.pos === "D" ? "defensemen" : "forwards";
+  const hp = pctile(b.ht, g.ht, false), wp = pctile(b.wt, g.wt, false);
+  const avg = (hp + wp) / 2;
+  const lab = avg >= 80 ? "Big" : avg >= 60 ? "Above-average size" : avg >= 40 ? "Average size" : avg >= 20 ? "Below-average size" : "Small";
+  return { label: lab, avg: avg, hp: hp, wp: wp, line: lab + ": " + base + ". Height " + ord(hp) + " and weight " + ord(wp) + " percentile among NHL " + who + "." };
+}
+
+/* Player type, derived from 2025-26 production, shot and physical rates and special-teams ice time. */
+function styleRead(id, p, b) {
+  const l = b.ls, a = ADV[id];
+  if (p.pos === "G") {
+    if (!l) return { label: "Limited NHL sample", why: ["No 2025-26 NHL games to base a read on."] };
+    const gs = l[1];
+    const lab = gs >= 50 ? "Number-one workhorse" : gs >= 35 ? "Starting goalie" : gs >= 15 ? "Tandem goalie" : "Spot starter";
+    const gw = [gs + " starts in 2025-26", "Save percentage " + l[6] + " (" + ord(pctile(parseFloat(l[6]), LEAGUE.G.sv, false)) + " percentile)"];
+    const g2 = XS[id] && XS[id].ls2;
+    if (g2) gw.push(seasonLbl(-2) + ": " + g2[1] + " starts, " + g2[6] + " save percentage, " + g2[5] + " GAA");
+    return { label: lab, why: gw };
+  }
+  if (!l || !a) return { label: "No NHL sample yet", why: ["No 2025-26 NHL games to base a type on."] };
+  const bs = basisOf(p, b), yr = bs.yr;
+  const gp = bs.gp, g = bs.g, pts = bs.g + bs.a;
+  const grp = grpOf(p);
+  const ppg = pts / gp, ppgP = pctile(ppg, grp.ppg, false);
+  const gShare = pts ? g / pts : 0.5;
+  const shP = pctile(a[5], grp.ish, false), hitP = pctile(a[0], grp.hits, false);
+  const blkP = pctile(a[1], grp.blk, false), satP = pctile(a[4] / 100, grp.sat, false);
+  const ppT = a[8], pkT = a[9];
+  const sz = sizeRead(p, b);
+  const isD = p.pos === "D";
+  const noun = isD ? "defenseman" : p.pos === "C" ? "center" : "winger";
+  const why = [];
+  let label;
+  const offWhy = () => {
+    why.push(ord(ppgP) + " percentile points per game, " + yr + " (" + ppg.toFixed(2) + ")");
+    if (!isD) why.push(Math.round(gShare * 100) + "% of his points are goals, " + ord(shP) + " percentile shots per 60");
+    if (ppT >= 100) why.push("Power play: " + toi(ppT) + " per game");
+  };
+  if (isD) {
+    if (ppgP >= 70) { label = ppT >= 100 ? "Offensive defenseman (power play)" : "Offensive defenseman"; offWhy(); }
+    else if (pkT >= 100) { label = "Shutdown defenseman"; why.push("Penalty kill: " + toi(pkT) + " per game"); why.push(ord(blkP) + " percentile blocks per 60"); }
+    else if (hitP >= 80) { label = "Physical defenseman"; why.push(ord(hitP) + " percentile hits per 60"); }
+    else if (satP >= 70) { label = "Puck-moving defenseman"; why.push(ord(satP) + " percentile shot-attempt share at 5v5"); }
+    else if (a[7] >= 1000) { label = "Steady two-way defenseman"; why.push("Plays " + toi(a[7]) + " per game at even strength"); }
+    else { label = "Depth defenseman"; why.push("Third-pair minutes: " + toi(a[7]) + " per game at even strength"); }
+  } else if (ppgP >= 65) {
+    if (gShare >= 0.5 && shP >= 60) label = "Scoring " + noun;
+    else if (gShare <= 0.42) label = "Playmaking " + noun;
+    else label = "All-around offensive " + noun;
+    offWhy();
+    if (pkT >= 75) why.push("Also kills penalties: " + toi(pkT) + " per game");
+  } else if (pkT >= 75) {
+    label = (hitP >= 70 ? "Physical checking " : "Checking ") + noun;
+    why.push("Penalty kill: " + toi(pkT) + " per game");
+    why.push(ord(hitP) + " percentile hits per 60");
+  } else if (hitP >= 80) {
+    label = "Physical energy " + noun;
+    why.push(ord(hitP) + " percentile hits per 60 (" + a[0].toFixed(1) + ")");
+  } else if (sz.avg >= 75 && hitP >= 45) {
+    label = "Power " + noun;
+    why.push(sz.label + " frame, " + ord(hitP) + " percentile hits per 60");
+  } else if (ppgP >= 50) {
+    label = satP >= 70 ? "Two-way " + noun : "Middle-six " + noun;
+    why.push(ord(ppgP) + " percentile points per game, " + yr + " (" + ppg.toFixed(2) + ")");
+    why.push(ord(satP) + " percentile shot-attempt share at 5v5");
+  } else {
+    label = "Depth " + noun;
+    why.push(ord(ppgP) + " percentile points per game, " + yr + " (" + ppg.toFixed(2) + ")");
+    why.push("Plays " + toi(a[7]) + " per game at even strength");
+  }
+  const xs = XS[id] || {};
+  const fr = foRead(id, p);
+  if (fr && !isD) {
+    why.push("Faceoffs: " + fr.pct.toFixed(1) + "% on " + fr.n.toLocaleString("en-US") + " draws in " + fr.yr + " (" + foWord(fr.pct) + "; league average is about 50%)");
+    if (fr.n >= 300 && fr.pct >= 55) label += " (strong on faceoffs)";
+    else if (fr.n >= 300 && fr.pct <= 46) label += " (weak on faceoffs)";
+  }
+  if (l[0] >= 20 && xs.ls2 && xs.ls2[0] >= 20) {
+    const q1 = (l[1] + l[2]) / l[0], q2 = (xs.ls2[1] + xs.ls2[2]) / xs.ls2[0], dq = q1 - q2;
+    why.push("Points per game: " + q1.toFixed(2) + " in " + seasonLbl(-1) + ", " + q2.toFixed(2) + " in " + seasonLbl(-2) + (Math.abs(dq) < 0.08 ? " (steady)" : dq > 0 ? " (trending up)" : " (trending down)"));
+  }
+  if (xs.h && xs.h[1] != null && l[0] > 0) {
+    let t = "Hits: " + xs.h[1] + " in " + l[0] + " GP in " + seasonLbl(-1) + " (" + (xs.h[1] / l[0]).toFixed(1) + " per game, " + ord(hitP) + " percentile per 60)";
+    if (xs.h[2] != null && xs.ls2) t += "; " + xs.h[2] + " in " + xs.ls2[0] + " GP in " + seasonLbl(-2);
+    if (xs.h[0] != null && p.gp > 0) t += "; " + xs.h[0] + " in " + p.gp + " GP so far this season";
+    why.push(t);
+  }
+  if (l[0] >= 10) {
+    const pg = l[4] / l[0];
+    let t = "Penalty minutes: " + l[4] + " in " + seasonLbl(-1) + " (" + pg.toFixed(2) + " per game, " + pimWord(pg) + ")";
+    if (xs.ls2 && xs.ls2[0] >= 10) t += "; " + xs.ls2[4] + " in " + seasonLbl(-2);
+    why.push(t);
+  }
+  if (!bs.cur && p.gp > 0) why.push("This season: " + ((p.g + p.a) / p.gp).toFixed(2) + " points per game in " + p.gp + " GP. Type switches to " + seasonLbl(0) + " production at 25 GP.");
+  if (gp < 25) why.push("Only " + gp + " GP in 2025-26, so this read is thin.");
+  return { label: label, why: why };
+}
+
+function profileHTML(id, p, b) {
+  const st = styleRead(id, p, b), sz = sizeRead(p, b);
+  return '<div class="prof"><div class="prof-t">' + esc(st.label) + '</div>' +
+    '<div class="prof-s">' + esc(sz.line) + "</div>" +
+    '<ul class="why">' + st.why.map((w) => "<li>" + esc(w) + "</li>").join("") + "</ul>" +
+    '<div class="m-foot">Type is derived from stats, not a scouting opinion. Points use the current season once a player has 25 GP, otherwise last season. Shots, blocks and ice-time splits are last season. Hits and penalty minutes are shown for the last two seasons plus this one; faceoff % is for centers only.</div></div>';
+}
+
+function barRow(label, valueText, pct, peers) {
+  return '<div class="bar"><div class="bar-top"><span>' + label + "</span><b>" + valueText + "</b></div>" +
+    '<div class="track"><i style="width:' + pct + '%"></i><s style="left:25%"></s><s style="left:50%"></s><s style="left:75%"></s></div>' +
+    '<div class="bar-sub">About the ' + ord(pct) + " percentile among " + peers + "</div></div>";
+}
+
+function leagueBars(p, b, id) {
+  const l = b.ls;
+  if (!l || l[0] < 20) {
+    return '<div class="plain">No league comparison. A player needs at least 20 games in 2025-26, and this one had ' + (l ? l[0] : 0) + ".</div>";
+  }
+  if (p.pos === "G") {
+    const g = LEAGUE.G, peers = g.n + " goalies";
+    return '<div class="sec-h">Goaltending</div><div class="bars">' +
+      barRow("Save percentage", l[6], pctile(parseFloat(l[6]), g.sv, false), peers) +
+      barRow("Goals against average", l[5], pctile(parseFloat(l[5]), g.gaa, true), peers) + "</div>" +
+      '<div class="m-foot">2025-26 regular season, goalies with 20+ games. Percentiles are estimated from league cut points. Ticks mark the 25th, 50th and 75th percentile.</div>';
+  }
+  const a = ADV[id], grp = grpOf(p), who = p.pos === "D" ? "defensemen" : "forwards";
+  const bs = basisOf(p, b), prev = seasonLbl(-1);
+  const ppg = (bs.g + bs.a) / bs.gp;
+  const peers = grp.n + " " + who, allPeers = grp.nAll + " " + who;
+  const offense = [barRow("Points per game, " + bs.yr, ppg.toFixed(2), pctile(ppg, grp.ppg, false), peers)];
+  const defense = [];
+  const use = [];
+  if (a) {
+    offense.push(barRow("Shots per 60 at 5v5, " + prev, a[5].toFixed(1), pctile(a[5], grp.ish, false), allPeers));
+    defense.push(barRow("Shot-attempt share at 5v5, " + prev, a[4].toFixed(1) + "%", pctile(a[4] / 100, grp.sat, false), allPeers));
+    defense.push(barRow("Takeaways per 60, " + prev, a[2].toFixed(2), pctile(a[2], grp.tk, false), allPeers));
+    defense.push(barRow("Blocked shots per 60, " + prev, a[1].toFixed(2), pctile(a[1], grp.blk, false), allPeers));
+    defense.push(barRow("Hits per 60, " + prev, a[0].toFixed(1), pctile(a[0], grp.hits, false), allPeers));
+  }
+  const t = bs.toi;
+  if (t) use.push(barRow("Ice time per game, " + bs.yr, toi(t), pctile(t, grp.toi, false), peers));
+  let html = '<div class="sec-h">Offense</div><div class="bars">' + offense.join("") + "</div>";
+  if (defense.length) html += '<div class="sec-h">Defense and possession</div><div class="bars">' + defense.join("") + "</div>";
+  html += '<div class="sec-h">Deployment</div><div class="bars">' + use.join("") + "</div>";
+  if (a) html += '<div class="grid grid3">' + stat(toi(a[7]), "Even strength") + stat(toi(a[8]), "Power play") + stat(toi(a[9]), "Penalty kill") + "</div>" +
+    '<div class="m-foot">Average ice time per game in ' + prev + ".</div>";
+  html += '<div class="m-foot">Points and ice time use ' + bs.yr + ' when a player has 25+ GP this season, otherwise ' + prev + '. Both compare with ' + prev + ' players who had 40+ games. Shots, possession and defense compare with every skater who played a game, so call-ups are in the pool and these are approximate. Percentiles are estimated from league cut points. Ticks mark the 25th, 50th and 75th percentile.' +
+    (l[0] < 40 ? " Small sample for this player: " + l[0] + " GP." : "") + "</div>";
+  return html;
+}
+
+function openSheet(id, slotLabel) {
+  const p = P[id]; if (!p) return;
+  const b = BIO[id];
+  const tk = p.t, T = GAME.teams[tk];
+  const rl = roles(tk, id);
+  const tags = [];
+  if (slotLabel) tags.push(slotLabel);
+  rl.forEach((r) => tags.push(r));
+  const status = statusFor(tk, id);
+  let grid, foot;
+  if (p.pos === "G") {
+    grid = stat(p.gp, "GP") + stat(p.gs, "GS") + stat(p.w + "-" + p.l + "-" + p.otl, "W-L-OT") + stat(p.gaa, "GAA") +
+      stat(p.sv, "SV%") + stat(p.sa, "Shots against") + stat(p.ga, "Goals against") + stat(p.so, "Shutouts");
+    foot = seasonLbl(0) + " regular season, " + p.gp + " GP.";
+  } else {
+    const pts = p.g + p.a;
+    const sh = p.sog ? (100 * p.g / p.sog).toFixed(1) : "0.0";
+    const xx = XS[id] || {}, h0 = xx.h && xx.h[0] != null ? xx.h[0] : null;
+    const extra = (p.pos === "C" ? stat(p.fo.toFixed(1), "FO%") : "") + stat(p.gw, "GW goals") +
+      (h0 != null ? stat(h0, "Hits") + stat((h0 / p.gp).toFixed(1), "Hits/GP") : "") + stat((p.pim / p.gp).toFixed(2), "PIM/GP");
+    grid = stat(p.gp, "GP") + stat(p.g, "Goals") + stat(p.a, "Assists") + stat(pts, "Points") +
+      stat(sgn(p.pm), "+/-") + stat(p.pim, "PIM") + stat(p.ppg, "PP goals") + stat(p.sog, "Shots") +
+      stat(sh, "Shot %") + stat(toi(p.toi), "TOI/GP") + stat((pts / p.gp).toFixed(2), "Pts/GP") + extra;
+    foot = seasonLbl(0) + " regular season, " + p.gp + " GP. TOI is average per game.";
+  }
+  const sheet = $("#sheet");
+  sheet.dataset.team = tk;
+  sheet.innerHTML =
+    '<div class="m-head"><div class="m-num">' + (p.num == null ? "" : p.num) + "</div>" +
+    '<div><div class="m-name" id="m-name">' + esc(p.n) + '</div><div class="m-sub">' + esc(T.city + " " + T.name) + " | " + POS[p.pos] + "</div></div>" +
+    '<button class="close" type="button" id="close">Close</button></div>' +
+    '<div class="stabs"><button type="button" data-st="ov" aria-pressed="true">Overview</button>' +
+    '<button type="button" data-st="cx" aria-pressed="false">Context</button></div>' +
+    '<div class="m-body" data-panel="ov">' +
+    (status ? '<div class="status">' + esc(status) + "</div>" : "") +
+    (tags.length ? '<div class="tags">' + tags.map((t) => '<span class="tag">' + esc(t) + "</span>").join("") + "</div>" : "") +
+    profileHTML(id, p, b) +
+    '<div class="grid">' + grid + "</div>" +
+    '<div class="m-foot">' + esc(foot) + "</div>" +
+    bioStrip(p, b) + "</div>" +
+    '<div class="m-body" data-panel="cx" hidden>' +
+    '<div class="sec-h">Season by season</div>' + seasonTable(p, b, id) + seasonNote(p, id) +
+    leagueBars(p, b, id) + "</div>";
+  lastFocus = document.activeElement;
+  $("#veil").hidden = false;
+  document.body.style.overflow = "hidden";
+  sheet.scrollTop = 0;
+  $("#close").focus();
+}
+
+function closeSheet() {
+  $("#veil").hidden = true;
+  document.body.style.overflow = "";
+  if (lastFocus && lastFocus.focus) lastFocus.focus();
+}
+
+document.addEventListener("click", (e) => {
+  const jp = e.target.closest("[data-jump]");
+  if (jp) { const el = document.getElementById(jp.dataset.jump); if (el && el.scrollIntoView) el.scrollIntoView({ behavior: "smooth", block: "start" }); return; }
+  const st = e.target.closest("[data-st]");
+  if (st) {
+    document.querySelectorAll("[data-st]").forEach((b) => b.setAttribute("aria-pressed", String(b === st)));
+    document.querySelectorAll("[data-panel]").forEach((pn) => { pn.hidden = pn.dataset.panel !== st.dataset.st; });
+    return;
+  }
+  const tab = e.target.closest("[data-tab]");
+  if (tab) {
+    const v = tab.dataset.tab;
+    $("#view").dataset.active = v;
+    $("#lineups").hidden = v === "matchup" || v === "injuries";
+    $("#matchup").hidden = v !== "matchup";
+    $("#injuries").hidden = v !== "injuries";
+    document.querySelectorAll(".tab").forEach((b) => b.setAttribute("aria-pressed", String(b === tab)));
+    return;
+  }
+  if (e.target.id === "veil" || e.target.id === "close") { closeSheet(); return; }
+  const pl = e.target.closest("[data-pid]");
+  if (pl) openSheet(pl.dataset.pid, pl.dataset.slotlabel);
+});
+document.addEventListener("keydown", (e) => { if (e.key === "Escape" && !$("#veil").hidden) closeSheet(); });
+
+render();
+</script>
+</body></html>
